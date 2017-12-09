@@ -14,18 +14,33 @@
             <div class="card">
                 <div class="card-block">
                     <h1>ASE 3-6 Sign up</h1>
-                    <div class="alert alert-success" role="alert">
-                        <!-- form -->
-                        <form method="POST" action="/api/signup">
-                            <input name="matrNr" type="text">
-                            <select name="groupNumber">
-                            {{range .groups}}
-                                <option value="{{.Number}}">{{.Number}}</option>
-                            {{end}}
-                            </select>
-                            <input type="submit">
-                        </form>
+
+
+                    <div id="signup">
+
+                        <p>Group Number:</p>
+
+                        <p><select v-model="group_id">
+                            <option disabled value="">Please select a group to sign up</option>
+                            <option>1</option>
+                            <option>2</option>
+                            <option>3</option>
+                        </select>
+                        </p>
+
+                        <p>Matriculation Number:</p>
+                        <p><input v-model="id" placeholder="Matriculation Number"></p>
+
+                        <p>Full Name:</p>
+                        <p><input v-model="name" placeholder="Full Name"></p>
+
+                        <p>matr: {{ id }}, name: {{ name }}, group: {{ group_id }} </p>
+
+                        <button v-on:click="submitData">Sign Up</button>
+
                     </div>
+
+
                 </div>
             </div>
         </div>
@@ -43,5 +58,55 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"
         integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn"
         crossorigin="anonymous"></script>
+<!-- include vue.js -->
+<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+
+
+<script>
+
+
+    var signup = new Vue({
+        el: '#signup',
+        data: {
+            group_id: '',
+            id: '',
+            name: ''
+        },
+        methods: {
+            submitData: function (event) {
+                // input validation
+                // send .post request
+
+                body = {
+                    "id" : this.id,
+                    "group_id" : this.group_id,
+                    "name" : this.name
+                }
+
+                url = "http://localhost:8080/api/version"
+                params = {
+                    method: 'POST',
+                    body: body,
+                    headers: new Headers()
+                }
+
+                fetch(url, params)
+                        .then((resp) => resp.json())
+                        .then(function (data) {
+                            // Here you get the data to modify as you please
+                    console.log(data)
+                        })
+                        .catch(function (error) {
+                            // If there is any error you will catch them here
+                            console.log(error)
+                        })
+
+
+            }
+        }
+    })
+
+
+</script>
 </body>
 </html>
