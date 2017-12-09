@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>ase-3-6-attendance-tracking</title>
+    <title>ase-3-6-attendance-tracking - Dashboard</title>
     <!-- include bootstrap -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css"
           integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
@@ -13,14 +13,14 @@
         <div class="col align-self-center">
             <div class="card">
                 <div class="card-block">
-                    <h1>ASE 3-6</h1>
-                    <div class="alert alert-success" role="alert">
-                        Hello <strong>{{.name}}</strong>!
-                    </div>
-                    <a href="/dashboard">dashboard</a>
-                    <a href="/signup">signup</a>
-                    <a href="/createGroup">create group</a>
-
+                    <h1>Create Group</h1>
+                    <form method="POST" action="/api/groups">
+                        <input name="number" type="text" placeholder="number">
+                        <input name="instructorName" type="text" placeholder="instructorName">
+                        <input name="time" type="text" placeholder="time">
+                        <input name="place" type="text" placeholder="place">
+                        <input type="submit">
+                    </form>
                 </div>
             </div>
         </div>
