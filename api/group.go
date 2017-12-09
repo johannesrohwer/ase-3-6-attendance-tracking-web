@@ -1,8 +1,8 @@
 package api
 
 type Group struct {
-	Number         string
-	Place          string
-	Time           string
-	InstructorName string
+	ID            string `json:"id"`
+	Place         string `json:"place"`
+	Time          string `json:"time"`
+	Instructor_ID string `json:"instructor_id"`
 }

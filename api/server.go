@@ -22,10 +22,12 @@ func init() {
 	router.HandleFunc("/createGroup", renderCreateGroup)
 
 	router.HandleFunc("/api/signup", createStudent)
-	router.HandleFunc("/api/students", readStudents)
+	router.HandleFunc("/api/students", readAllStudents).Methods("GET")
+	router.HandleFunc("/api/students", createStudent).Methods("POST")
+	router.HandleFunc("/api/students/{id}", readStudent)
 	router.HandleFunc("/api/groups", readAllGroups).Methods("GET")
 	router.HandleFunc("/api/groups", createGroup).Methods("POST")
-	router.HandleFunc("/api/groups/{number}", readGroup)
+	router.HandleFunc("/api/groups/{id}", readGroup)
 	router.HandleFunc("/api/version", readVersion)
 	http.Handle("/", router)
 }
@@ -73,17 +75,7 @@ func renderSignUp(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
-	// Load groups
-	c := appengine.NewContext(r)
-	q := datastore.NewQuery("Group").Ancestor(groupKey(c))
-	groups := make([]Group, 0, 10)
-	if _, err := q.GetAll(c, &groups); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	data := map[string]interface{}{"groups": groups}
-	//data := map[string]string{"name": "world"}
+	data := map[string]string{}
 
 	t.Execute(w, data)
 }
@@ -110,98 +102,147 @@ func readVersion(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(version)
 }
 
-func readStudents(w http.ResponseWriter, r *http.Request) {
-	c := appengine.NewContext(r)
-	q := datastore.NewQuery("Student").Ancestor(studentKey(c))
-	students := make([]Student, 0, 10)
-	if _, err := q.GetAll(c, &students); err != nil {
+// API Student
+
+func createStudent(w http.ResponseWriter, r *http.Request) {
+	decoder := json.NewDecoder(r.Body)
+	var student Student
+	if err := decoder.Decode(&student); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(students)
-}
-
-func createStudent(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
-	matrNr := r.Form["matrNr"][0]
-	groupNumber := r.Form["groupNumber"][0]
-	student := Student{MatrNr: matrNr, GroupNumber: groupNumber}
-
-	context := appengine.NewContext(r)
-	key := datastore.NewIncompleteKey(context, "Student", studentKey(context))
-	_, err := datastore.Put(context, key, &student)
+	ctx := appengine.NewContext(r)
+	key := studentKeyFromString(ctx, student.ID)
+	_, err := datastore.Put(ctx, key, &student)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(student)
 }
 
-func createGroup(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
-	number := r.Form["number"][0]
-	place := r.Form["place"][0]
-	time := r.Form["time"][0]
-	instructorName := r.Form["instructorName"][0]
-	group := Group{Number: number, Place: place, Time: time, InstructorName: instructorName}
-
-	context := appengine.NewContext(r)
-	key := datastore.NewIncompleteKey(context, "Group", groupKey(context))
-	_, err := datastore.Put(context, key, &group)
-	if err != nil {
+func readAllStudents(w http.ResponseWriter, r *http.Request) {
+	ctx := appengine.NewContext(r)
+	q := datastore.NewQuery("Student")
+	var students []Student
+	if _, err := q.GetAll(ctx, &students); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
+	if students != nil {
+		json.NewEncoder(w).Encode(students)
+	} else {
+		emptyArrayResponse(w)
+	}
+}
+
+func readStudent(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	ctx := appengine.NewContext(r)
+	var student []Student
+	q := datastore.NewQuery("Student").Filter("ID =", id)
+	if _, err := q.GetAll(ctx, &student); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	if student != nil {
+		json.NewEncoder(w).Encode(student[0])
+	} else {
+		emptyObjectResponse(w)
+	}
+}
+
+// API Group
+
+func createGroup(w http.ResponseWriter, r *http.Request) {
+	decoder := json.NewDecoder(r.Body)
+	var group Group
+	if err := decoder.Decode(&group); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	ctx := appengine.NewContext(r)
+	key := groupKeyFromString(ctx, group.ID)
+
+	_, err := datastore.Put(ctx, key, &group)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(group)
 }
 
 func readAllGroups(w http.ResponseWriter, r *http.Request) {
-	c := appengine.NewContext(r)
-	q := datastore.NewQuery("Group").Ancestor(groupKey(c))
-	groups := make([]Group, 0, 10)
-	if _, err := q.GetAll(c, &groups); err != nil {
+	ctx := appengine.NewContext(r)
+	q := datastore.NewQuery("Group")
+
+	var groups []Group
+	if _, err := q.GetAll(ctx, &groups); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(groups)
+	if groups != nil {
+		json.NewEncoder(w).Encode(groups)
+	} else {
+		emptyArrayResponse(w)
+	}
 }
 
 func readGroup(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	number := vars["number"]
+	id := vars["id"]
 
-	context := appengine.NewContext(r)
-
+	ctx := appengine.NewContext(r)
 	var group []Group
-	q := datastore.NewQuery("Group").Filter("Number <=", number)
-	if _, err := q.GetAll(context, group); err != nil {
+	q := datastore.NewQuery("Group").Filter("ID =", id)
+	if _, err := q.GetAll(ctx, &group); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(group)
+	if group != nil {
+		json.NewEncoder(w).Encode(group[0])
+	} else {
+		emptyObjectResponse(w)
+	}
 }
 
 // Database helpers
 
-func studentKey(c context.Context) *datastore.Key {
-	return datastore.NewKey(c, "Student", "default_list", 0, nil)
+func studentKeyFromString(c context.Context, key string) *datastore.Key {
+	return datastore.NewKey(c, "Student", key, 0, nil)
+}
+func groupKeyFromString(c context.Context, key string) *datastore.Key {
+	return datastore.NewKey(c, "Group", key, 0, nil)
 }
 
-func groupKey(c context.Context) *datastore.Key {
-	return datastore.NewKey(c, "Group", "default_list", 0, nil)
+// Utils
+
+func emptyObjectResponse(w http.ResponseWriter) {
+	json.NewEncoder(w).Encode(map[string]interface{}{})
+}
+
+func emptyArrayResponse(w http.ResponseWriter) {
+	json.NewEncoder(w).Encode([]interface{}{})
 }

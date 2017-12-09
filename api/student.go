@@ -1,6 +1,7 @@
 package api
 
 type Student struct {
-	MatrNr      string
-	GroupNumber string
+	ID      string `json:"id"`
+	GroupID string `json:"group_id"`
+	Name    string `json:"name"`
 }
