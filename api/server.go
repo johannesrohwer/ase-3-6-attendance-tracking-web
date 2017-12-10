@@ -17,6 +17,7 @@ import (
 func init() {
 	router := mux.NewRouter()
 	router.HandleFunc("/", renderIndex)
+	router.HandleFunc("/login", renderIndex)
 	router.HandleFunc("/signup", renderSignUp)
 	router.HandleFunc("/dashboard", renderDashboard)
 	router.HandleFunc("/createGroup", renderCreateGroup)
