@@ -20,12 +20,11 @@
 
                         <p>Group Number:</p>
 
-                        <p><select v-model="group_id">
+                        <p>
+                            <select v-model="group_id">
                             <option disabled value="">Please select a group to sign up</option>
-                            <option>1</option>
-                            <option>2</option>
-                            <option>3</option>
-                        </select>
+                            <option v-for="item in group_options" :value="item">{{ item.id }}</option>
+                            </select>
                         </p>
 
                         <p>Matriculation Number:</p>
@@ -34,7 +33,7 @@
                         <p>Full Name:</p>
                         <p><input v-model="name" placeholder="Full Name"></p>
 
-                        <p>matr: {{ id }}, name: {{ name }}, group: {{ group_id }} </p>
+                        <p>matr: {{ id }}, name: {{ name }}, group: {{ group_id.id }} </p>
 
                         <button v-on:click="submitData">Sign Up</button>
 
@@ -70,7 +69,20 @@
         data: {
             group_id: '',
             id: '',
-            name: ''
+            name: '',
+            group_options: []
+        },
+        beforeMount() {
+            var self = this
+            url = "http://localhost:8080/api/groups"
+            fetch(url)
+                    .then((resp) => resp.json())
+                    .then(function (data) {
+                        self.group_options = data
+                    })
+                    .catch(function (error) {
+                        console.log(error)
+                    })
         },
         methods: {
             submitData: function (event) {
@@ -78,29 +90,29 @@
                 // send .post request
 
                 body = {
-                    "id" : this.id,
-                    "group_id" : this.group_id,
-                    "name" : this.name
+                    "id": this.id,
+                    "group_id": this.group_id.id,
+                    "name": this.name
                 }
 
-                url = "http://localhost:8080/api/version"
+                url = "http://localhost:8080/api/students"
                 params = {
                     method: 'POST',
-                    body: body,
+                    body: JSON.stringify(body),
                     headers: new Headers()
                 }
+
+                console.log(params.body)
 
                 fetch(url, params)
                         .then((resp) => resp.json())
                         .then(function (data) {
-                            // Here you get the data to modify as you please
-                    console.log(data)
+                            sessionStorage.login = JSON.stringify(data)
+                            window.location.replace("/dashboard");
                         })
                         .catch(function (error) {
-                            // If there is any error you will catch them here
                             console.log(error)
                         })
-
 
             }
         }

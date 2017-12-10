@@ -14,7 +14,30 @@
             <div class="card">
                 <div class="card-block">
                     <h1>Dashboard</h1>
-                    Below you can see information about your group and your attendance logs.
+                    <div id="greeting">
+                        Hello {{name}}!
+                        <br>Below you can see information about your group and your attendance logs.
+
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Your Group Number</th>
+                                <th>Time Slot</th>
+                                <th>Room</th>
+
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>{{group}}</td>
+                                <td>{{time}}</td>
+                                <td>{{place}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+
+                    </div>
 
                     <table id="dashboard" class="table table-striped">
                         <thead>
@@ -31,6 +54,7 @@
                         </tr>
                         </tbody>
                     </table>
+
 
                 </div>
             </div>
@@ -53,6 +77,39 @@
 <script src="https://cdn.jsdelivr.net/npm/vue"></script>
 
 <script>
+
+    app = new Vue({
+        el: "#greeting",
+        data: {
+            name: (function () {
+                var credentials = JSON.parse(sessionStorage.login)
+                return credentials.name
+            })(),
+            group: (function () {
+                var credentials = JSON.parse(sessionStorage.login)
+                return credentials.group_id
+            })(),
+            time: '11',
+            place: 'room a'
+        },
+
+        beforeMount() {
+            var self = this
+            url = "http://localhost:8080/api/groups/" + this.group
+            fetch(url)
+                    .then((resp) => resp.json())
+                    .then(function (data) {
+
+                        self.time = data.time
+                        self.place = data.place
+
+                    })
+                    .catch(function (error) {
+                        console.log(error)
+                    })
+        }
+    });
+
     dashboard = new Vue({
         el: "#dashboard",
         // TODO: currently only hard-coded items, fetch from server
@@ -60,7 +117,7 @@
             items: [
                 {week: 1, "attended": "yes"}, {week: 2, "attended": "no"}, {week: 3, "attended": "yes"}
             ]
-        },
+        }
     })
 </script>
 

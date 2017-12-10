@@ -12,11 +12,15 @@
         <div class="col align-self-start"></div>
         <div class="col align-self-center">
             <div class="card">
-                <div class="card-block">
+                <div class="card-block" id ="login">
                     <h1>ASE 3-6</h1>
-                    <div class="alert alert-success" role="alert">
-                        Hello <strong>{{.name}}</strong>!
-                    </div>
+
+
+                    <p>Login</p>
+                    <p><input v-model="id" placeholder="matriculation number"></p>
+
+                    <button v-on:click="start_login">Login</button>
+
                     <a href="/dashboard">dashboard</a>
                     <a href="/signup">signup</a>
                     <a href="/createGroup">create group</a>
@@ -42,12 +46,51 @@
 <script src="https://cdn.jsdelivr.net/npm/vue"></script>
 
 <script>
-    new Vue({
-        el: '#groupSelect',
+
+    var login = new Vue({
+        el: '#login',
         data: {
-            selected: ''
+            id: ''
+        },
+        methods: {
+            start_login: function (event) {
+                // TODO: input validation
+
+                // send .post request
+
+                body = {
+                    "id": this.id
+                }
+
+                url = "http://localhost:8080/api/students/" + this.id
+                params = {
+                    method: 'POST',
+                    body: JSON.stringify(body),
+                    headers: new Headers()
+                }
+
+
+                fetch(url, params)
+                        .then((resp) => resp.json())
+                        .then(function (data) {
+
+                            if(Object.keys(data).length === 0 && data.constructor === Object) {
+                                alert("This is not a valid matriculation number.")
+                            } else {
+                                sessionStorage.login = JSON.stringify(data)
+                                window.location.replace("/dashboard");
+                            }
+
+                        })
+                        .catch(function (error) {
+                            console.log(error)
+                        })
+
+            }
         }
     })
+
+
 </script>
 
 </body>
