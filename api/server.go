@@ -31,6 +31,7 @@ func init() {
 	router.HandleFunc("/signup", renderSignUp)
 	router.HandleFunc("/dashboard", renderDashboard)
 	router.HandleFunc("/createGroup", renderCreateGroup)
+	router.HandleFunc("/test", test)
 
 	router.HandleFunc("/api/signup", createStudent)
 	router.HandleFunc("/api/students", readAllStudents).Methods("GET")
@@ -46,6 +47,17 @@ func init() {
 }
 
 // Template rendering
+
+func test(w http.ResponseWriter, r *http.Request) {
+
+	t, err := loadTemplate("test.html")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	data := map[string]string{"name": "world"}
+	t.Execute(w, data)
+}
 
 func loadTemplate(templateName string) (*template.Template, error) {
 
