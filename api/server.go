@@ -8,6 +8,13 @@ import (
 	"os"
 	"path/filepath"
 
+	"time"
+
+	"fmt"
+
+	"io/ioutil"
+
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/datastore"
@@ -16,6 +23,9 @@ import (
 // This method is the entry point for app engine.
 func init() {
 	router := mux.NewRouter()
+
+	router.PathPrefix("/static").Handler(http.StripPrefix("/static", http.FileServer(http.Dir("static/"))))
+
 	router.HandleFunc("/", renderIndex)
 	router.HandleFunc("/signup", renderSignUp)
 	router.HandleFunc("/dashboard", renderDashboard)
@@ -28,6 +38,8 @@ func init() {
 	router.HandleFunc("/api/groups", readAllGroups).Methods("GET")
 	router.HandleFunc("/api/groups", createGroup).Methods("POST")
 	router.HandleFunc("/api/groups/{id}", readGroup)
+	router.HandleFunc("/api/attendance/{student_id}/{presented}", getAttendanceToken).Methods("GET")
+	router.HandleFunc("/api/attendance", registerAttendanceToken).Methods("POST")
 	router.HandleFunc("/api/version", readVersion)
 	http.Handle("/", router)
 }
@@ -225,6 +237,74 @@ func readGroup(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(group[0])
 	} else {
 		emptyObjectResponse(w)
+	}
+}
+
+// API Attendance
+
+func getAttendanceToken(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	studentID := vars["student_id"]
+	presented := vars["presented"] == "true"
+
+	// Fetch Student object
+	ctx := appengine.NewContext(r)
+	var student []Student
+	q := datastore.NewQuery("Student").Filter("ID =", studentID)
+	if _, err := q.GetAll(ctx, &student); err != nil || student == nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	currentWeek := "0" // TODO: replace placeholder week
+	attendance := NewAttendance(studentID, student[0].GroupID, currentWeek, presented)
+
+	// Encode attendance object to JWT
+	JWTObject := map[string]interface{}{}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"exp":        time.Date(2019, 10, 10, 12, 0, 0, 0, time.UTC).Unix(), // TODO: insert actual expiry
+		"attendance": attendance,
+	})
+
+	tokenString, err := token.SignedString([]byte{123})
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	JWTObject["token"] = tokenString
+
+	// Send encoded JWT back to client
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(JWTObject)
+}
+
+func registerAttendanceToken(w http.ResponseWriter, r *http.Request) {
+	// Extract token from POST request
+	var request map[string]interface{}
+	rawBody, err := ioutil.ReadAll(r.Body)
+	json.Unmarshal(rawBody, &request)
+	tokenString := request["token"].(string) // TODO: error handler
+
+	// Validate token
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+		}
+
+		// TODO: read real secret
+		return []byte{123}, nil
+	})
+
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		// TODO: validate and check for duplicates
+		// TODO: insert into datastore
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(claims["attendance"])
+	} else {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
 
