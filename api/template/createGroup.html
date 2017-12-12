@@ -1,42 +1,193 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>ase-3-6-attendance-tracking - Dashboard</title>
-    <!-- include bootstrap -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css"
-          integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Bare - Start Bootstrap Template</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <style>
+        body {
+            padding-top: 54px;
+        }
+
+        @media (min-width: 992px) {
+            body {
+                padding-top: 56px;
+            }
+        }
+
+    </style>
+
 </head>
+
 <body>
+
+<!-- Navigation -->
+<nav class="navbar navbar-dark fixed-top" style="background-color: #1dbaed;">
+    <div class="container">
+        <a class="navbar-brand" href="#">
+            <img src="static/assets/gabelbart.jpg" width="50" height="50" alt="">
+            Attendence Tracking System
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
+                aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ml-auto">
+
+                <li class="nav-item">
+                    <a class="nav-link" href="/login">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/signup">Sign Up</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/createGroup">Create Group</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/dashboard">Dashboard</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Page Content -->
 <div class="container">
     <div class="row">
-        <div class="col align-self-start"></div>
-        <div class="col align-self-center">
-            <div class="card">
-                <div class="card-block">
-                    <h1>Create Group</h1>
-                    <form method="POST" action="/api/groups">
-                        <input name="number" type="text" placeholder="number">
-                        <input name="instructorName" type="text" placeholder="instructorName">
-                        <input name="time" type="text" placeholder="time">
-                        <input name="place" type="text" placeholder="place">
-                        <input type="submit">
+        <div class="col-lg-12 text-center">
+            <h1 class="mt-5">Create a Tutor Group</h1>
+            <BR>
+            <p class="lead">If you are a tutor, you can use the following form to register your tutor group.
+                <BR>Please make sure to fill out all fields accordingly.</p>
+
+            <div id="createGroup">
+
+                <div class="col-lg-6 offset-3">
+                    <form>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label>Group Number</label>
+                                <input id="groupForm" v-model="group_id" v-on:blur="validateGroupNumber"
+                                       class="form-control" placeholder="e.g. 1">
+                                <div class="invalid-feedback">
+                                    Please pick an integer number, for example 2.
+                                </div>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>Instructor Name</label>
+                                <input v-model="name" class="form-control" placeholder="Full Name">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Time</label>
+                            <input v-model="time" class="form-control" placeholder="e.g. Monday, 10-12">
+                        </div>
+                        <div class="form-group">
+                            <label>Place</label>
+                            <input v-model="place" class="form-control" placeholder="e.g. MI 01.07.021">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Instructor ID</label>
+                            <input v-model="instructor_id" class="form-control" placeholder="e.g. current ID">
+                        </div>
+
+
+                        <button v-on:click="submitData" type="button" class="btn btn-light">Create Tutorial Group
+                        </button>
                     </form>
                 </div>
+
             </div>
+
+
         </div>
-        <div class="col align-self-end"></div>
     </div>
 </div>
 
-<!-- include bootstrap js requirements -->
-<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js"
-        integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n"
-        crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"
-        integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb"
-        crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"
-        integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn"
-        crossorigin="anonymous"></script>
+<!-- Bootstrap core JavaScript -->
+<script src="static/jquery/jquery.min.js"></script>
+<script src="static/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- include vue.js -->
+<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+
+<!-- vue script-->
+<script>
+
+    function isInt(value) {
+        return !isNaN(value) &&
+                parseInt(Number(value)) == value &&
+                !isNaN(parseInt(value, 10));
+    }
+
+    var createGroup = new Vue({
+        el: '#createGroup',
+        data: {
+            group_id: '',
+            name: '',
+            time: '',
+            place: '',
+            instructor_id: ''
+        },
+        methods: {
+            submitData: function (event) {
+                // input validation
+                // TODO: missing input validation before submission
+
+                // send .post request
+                body = {
+                    "id": this.group_id,
+                    "time": this.time,
+                    "place": this.place,
+                    "instructor_id": this.instructor_id
+                }
+
+                url = "http://localhost:8080/api/groups"
+                params = {
+                    method: 'POST',
+                    body: JSON.stringify(body),
+                    headers: new Headers()
+                }
+
+                fetch(url, params)
+                        .then((resp) => resp.json())
+                        .then(function (data) {
+                            alert("Your group has been set up.")
+
+                        })
+                        .catch(function (error) {
+                            console.log(error)
+                            alert("There has been an issue creating your tutorial group. Please try again.")
+                        })
+            },
+            validateGroupNumber: function() {
+                // TODO: So far only checking if the group number is an integer.
+                if (isInt(this.group_id)) {
+                    $('#groupForm').removeClass("is-invalid")
+                    return
+                }
+                $('#groupForm').addClass("is-invalid")
+                return
+            }
+        }
+    })
+
+
+
+</script>
+
+
 </body>
+
 </html>

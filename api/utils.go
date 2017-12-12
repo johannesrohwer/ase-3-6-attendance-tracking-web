@@ -22,7 +22,7 @@ func loadTemplate(templateName string) (*template.Template, error) {
 	}
 
 	templatePath := filepath.Join(dir, "/template/"+templateName)
-	return template.New(templateName).ParseFiles(templatePath)
+	return template.New(templateName).Delims("[[", "]]").ParseFiles(templatePath)
 }
 
 func emptyObject() map[string]interface{} {
