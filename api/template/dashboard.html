@@ -1,85 +1,142 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>ase-3-6-attendance-tracking - Dashboard</title>
-    <!-- include bootstrap -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css"
-          integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Bare - Start Bootstrap Template</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <style>
+        body {
+            padding-top: 54px;
+        }
+
+        @media (min-width: 992px) {
+            body {
+                padding-top: 56px;
+            }
+        }
+
+    </style>
+
 </head>
+
 <body>
+
+<!-- Navigation -->
+<nav class="navbar navbar-dark fixed-top" style="background-color: #1dbaed;">
+    <div class="container">
+        <a class="navbar-brand" href="#">
+            <img src="static/assets/gabelbart.jpg" width="50" height="50" alt="">
+            Attendence Tracking System
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
+                aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Home
+                        <span class="sr-only">(current)</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/login">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/signup">Sign Up</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/createGroup">Create Group</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/dashboard">Dashboard</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Page Content -->
 <div class="container">
     <div class="row">
-        <div class="col align-self-start"></div>
-        <div class="col align-self-center">
-            <div class="card">
-                <div class="card-block">
-                    <h1>Dashboard</h1>
-                    <div id="greeting">
-                        Hello {{name}}!
-                        <br>Below you can see information about your group and your attendance logs.
+        <div class="col-lg-12 text-center" id="greeting">
+            <h1 class="mt-5">Dashboard</h1>
+            <div id="dashboard">
 
-                        <table class="table table-striped">
-                            <thead>
-                            <tr>
-                                <th>Your Group Number</th>
-                                <th>Time Slot</th>
-                                <th>Room</th>
+                <p class="lead">
+                    <br>Hello {{name}}!
+                    <br>Below you can see information about your group and your attendance logs.
+                </p>
 
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr>
-                                <td>{{group}}</td>
-                                <td>{{time}}</td>
-                                <td>{{place}}</td>
-                            </tr>
-                            </tbody>
-                        </table>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Your Group Number</th>
+                        <th>Time Slot</th>
+                        <th>Room</th>
+
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>{{group}}</td>
+                        <td>{{time}}</td>
+                        <td>{{place}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <p class="lead">
+                    <br> Attendance Log
+                </p>
+
+                <table class ="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Week Number</th>
+                        <th>Attended?</th>
+                        <th>Presented?</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="item in items">
+                        <td>{{item.week}}</td>
+                        <td>{{item.attended}}</td>
+                        <td>{{item.presented}}</td>
+                    </tr>
+                    </tbody>
+                </table>
 
 
-                    </div>
-
-                    <table id="dashboard" class="table table-striped">
-                        <thead>
-                        <tr>
-                            <th>Week</th>
-                            <th>Attended?</th>
-
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr v-for="item in items">
-                            <td>{{item.week}}</td>
-                            <td>{{item.attended}}</td>
-                        </tr>
-                        </tbody>
-                    </table>
-
-
-                </div>
             </div>
+
+
         </div>
-        <div class="col align-self-end"></div>
     </div>
 </div>
 
-<!-- include bootstrap js requirements -->
-<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js"
-        integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n"
-        crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"
-        integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb"
-        crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"
-        integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn"
-        crossorigin="anonymous"></script>
+<!-- Bootstrap core JavaScript -->
+<script src="static/jquery/jquery.min.js"></script>
+<script src="static/bootstrap/js/bootstrap.bundle.min.js"></script>
 <!-- include vue.js -->
 <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+
+<!-- vue script-->
 
 <script>
 
     app = new Vue({
-        el: "#greeting",
+        el: "#dashboard",
         data: {
             name: (function () {
                 var credentials = JSON.parse(sessionStorage.login)
@@ -89,8 +146,12 @@
                 var credentials = JSON.parse(sessionStorage.login)
                 return credentials.group_id
             })(),
-            time: '11',
-            place: 'room a'
+            time: '',
+            place: '',
+            items: [
+                {week: 1, "attended": "yes", "presented" : "yes"}, {week: 2, "attended": "no", "presented" : "no"},
+                {week: 3, "attended": "yes", "presented" : "no"}
+            ]
         },
 
         beforeMount() {
@@ -110,16 +171,10 @@
         }
     });
 
-    dashboard = new Vue({
-        el: "#dashboard",
-        // TODO: currently only hard-coded items, fetch from server
-        data: {
-            items: [
-                {week: 1, "attended": "yes"}, {week: 2, "attended": "no"}, {week: 3, "attended": "yes"}
-            ]
-        }
-    })
+
 </script>
 
+
 </body>
+
 </html>
