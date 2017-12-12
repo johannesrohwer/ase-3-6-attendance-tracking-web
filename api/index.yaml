@@ -11,6 +11,7 @@ indexes:
 - kind: Attendance
   properties:
   - name: ID
+  - name: StudentID
 
 - kind: Instructor
   properties:
