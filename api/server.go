@@ -23,6 +23,7 @@ func init() {
 
 	// Register routes for template engine
 	router.HandleFunc("/", renderIndex)
+	router.HandleFunc("/login", renderIndex)
 	router.HandleFunc("/signup", renderSignUp)
 	router.HandleFunc("/dashboard", renderDashboard)
 	router.HandleFunc("/createGroup", renderCreateGroup)
