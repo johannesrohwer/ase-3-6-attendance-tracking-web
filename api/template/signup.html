@@ -67,32 +67,47 @@
     <div class="row">
         <div class="col-lg-12 text-center">
             <h1 class="mt-5">Sign Up</h1>
-            <p class="lead">Please </p>
+            <p class="lead">Please sign up if you'd wish to take part in the ASE Attendance System.</p>
 
 
             <div id="signup">
+                <div class="col-lg-6 offset-3">
 
-                <p>Group Number:</p>
 
-                <p>
-                    <select v-model="group_id">
-                        <option disabled value="">Please select a group to sign up</option>
-                        <option v-for="item in group_options" :value="item">{{ item.id }}</option>
-                    </select>
-                </p>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                        <label>Group Number</label>
+                            <select v-model="group_id" class="form-control">
+                                <option disabled value="">Select group number</option>
+                                <option v-for="item in group_options" :value="item">{{ item.id }}</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label>Matriculation Number</label>
+                            <input id="matriculationNumberForm" v-on:blur="validateMatriculationNumber"
+                                   class="form-control" v-model="id" placeholder="Matriculation Number">
+                            <div class="invalid-feedback">
+                                Please input the correct matriculation number. A matriculation number has exactly 8
+                                characters and only contains digits.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input id="fullNameForm" v-on:blur="validateName"
+                               class="form-control" v-model="name" placeholder="Full Name">
+                        <div class="invalid-feedback">
+                            Please input your full name.
+                        </div>
+                    </div>
 
-                <p>Matriculation Number:</p>
-                <p><input v-model="id" placeholder="Matriculation Number"></p>
+                    <p>matr: {{ id }}, name: {{ name }}, group: {{ group_id.id }} </p>
 
-                <p>Full Name:</p>
-                <p><input v-model="name" placeholder="Full Name"></p>
+                    <button v-on:click="submitData" type="button" class="btn btn-light">Sign Up</button>
 
-                <p>matr: {{ id }}, name: {{ name }}, group: {{ group_id.id }} </p>
-
-                <button v-on:click="submitData">Sign Up</button>
+                </div>
 
             </div>
-
 
 
         </div>
@@ -133,8 +148,22 @@
         methods: {
             submitData: function (event) {
                 // input validation
-                // send .post request
+                let err = false
+                if (!this.validateName()) {
+                    err = true
+                }
 
+                if (!this.validateMatriculationNumber()) {
+                    err = true
+                }
+
+                if (err) {
+                    alert("Please make sure you have filled out all fields correctly.")
+                    return
+                }
+
+
+                // send .post request
                 body = {
                     "id": this.id,
                     "group_id": this.group_id.id,
@@ -160,7 +189,24 @@
                             console.log(error)
                         })
 
+            },
+            validateMatriculationNumber: function() {
+                if (this.id.length == 8 && (this.id.match(/^[0-9]+$/) != null)) {
+                    $('#matriculationNumberForm').removeClass("is-invalid")
+                    return true
+                }
+                $('#matriculationNumberForm').addClass("is-invalid")
+                return false
+            },
+            validateName: function() {
+                if (this.name) {
+                    $('#fullNameForm').removeClass("is-invalid")
+                    return true
+                }
+                $('#fullNameForm').addClass("is-invalid")
+                return false
             }
+
         }
     })
 
