@@ -14,9 +14,9 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func authMiddleware(next func(http.ResponseWriter, *http.Request)) http.Handler {
+func authMiddleware(next func(http.ResponseWriter, *http.Request), params ...string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		tS := r.Header.Get("Authorization: Bearer")
+		tS := r.Header.Get("Authorization")
 
 		if claims, err := validateJWTToken(tS); err == nil {
 			permissions := claims["permissions"].([]string)
