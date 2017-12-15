@@ -30,7 +30,8 @@ func init() {
 
 	// Register json API routes
 	router.HandleFunc("/api/signup", createStudent)
-	router.Handle("/api/students", authMiddleware(readAllStudents)).Methods("GET")
+	router.HandleFunc("/api/login", createCredentials)
+	router.HandleFunc("/api/students", readAllStudents).Methods("GET")
 	router.HandleFunc("/api/students", createStudent).Methods("POST")
 	router.HandleFunc("/api/students/{id}", readStudent)
 
@@ -117,50 +118,86 @@ func createCredentials(w http.ResponseWriter, r *http.Request) {
 
 	// Parse request into map
 	json.Unmarshal(rawBody, &request)
-	ID, ok := request["ID"].(string)
+	ID, ok := request["id"].(string)
 	if !ok {
-		sendErrorResponse(w, errors.New("No ID provided."), http.StatusBadRequest)
+		sendErrorResponse(w, errors.New("id empty."), http.StatusBadRequest)
 		return
 	}
 
 	password, ok := request["password"].(string)
 	if !ok {
-		sendErrorResponse(w, errors.New("No password provided."), http.StatusBadRequest)
+		sendErrorResponse(w, errors.New("password empty."), http.StatusBadRequest)
 		return
 	}
 
 	// Load user from datastore
-	if student, err := getStudent(ctx, ID); err != nil {
-		if verifyPassword(password, student.Password()) {
+	if student, err := getStudent(ctx, ID); err == nil {
+		if verifyPassword(password, student.Password) {
 			p := []string{"student"}
 			credentials := NewCredentials(ID, p)
-			createJWTToken(jwt.MapClaims{"credentials": credentials})
+			token, err := createJWTToken(jwt.MapClaims{"credentials": credentials})
+			if err != nil {
+				sendErrorResponse(w, errors.New("JWT creation failed."), http.StatusInternalServerError)
+			}
+
+			sendResponse(w, token, http.StatusOK)
 			return
 		}
 
-		sendErrorResponse(w, errors.New("Invalid password."), http.StatusForbidden)
+		sendErrorResponse(w, errors.New("Invalid credentials."), http.StatusForbidden)
 		return
 	}
 
 	// TODO: same thing for instructors
+	sendErrorResponse(w, errors.New("Invalid credentials."), http.StatusForbidden)
 }
 
 // API Student
 
 func createStudent(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.NewContext(r)
-	decoder := json.NewDecoder(r.Body)
-	var student Student
-	if err := decoder.Decode(&student); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+
+	// Extract password
+	var request map[string]interface{}
+	rawBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		sendErrorResponse(w, err, http.StatusInternalServerError)
 		return
 	}
 
-	// Extract password
-	// TODO: ^^^
+	// Parse request into map
+	json.Unmarshal(rawBody, &request)
+	ID, ok := request["id"].(string)
+	if !ok {
+		sendErrorResponse(w, errors.New("id empty."), http.StatusBadRequest)
+		return
+	}
 
-	_, err := putStudent(ctx, student)
+	name, ok := request["name"].(string)
+	if !ok {
+		sendErrorResponse(w, errors.New("name empty."), http.StatusBadRequest)
+		return
+	}
+
+	groupID, ok := request["group_id"].(string)
+	if !ok {
+		sendErrorResponse(w, errors.New("group_id empty."), http.StatusBadRequest)
+		return
+	}
+
+	password, ok := request["password"].(string)
+	if !ok {
+		sendErrorResponse(w, errors.New("password empty."), http.StatusBadRequest)
+		return
+	}
+
+	student, err := NewStudent(ID, name, groupID, password)
 	if err != nil {
+		sendErrorResponse(w, err, http.StatusInternalServerError)
+		return
+	}
+
+	if _, err := putStudent(ctx, *student); err != nil {
 		sendErrorResponse(w, err, http.StatusInternalServerError)
 		return
 	}

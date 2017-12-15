@@ -20,6 +20,7 @@ func authMiddleware(next func(http.ResponseWriter, *http.Request)) http.Handler 
 
 		if claims, err := validateJWTToken(tS); err == nil {
 			permissions := claims["permissions"].([]string)
+			// TODO: adjust permissions
 			if len(permissions) > 0 {
 				next(w, r)
 				return
@@ -99,4 +100,9 @@ func validateJWTToken(t string) (jwt.MapClaims, error) {
 func verifyPassword(password string, passwordHash []byte) bool {
 	err := bcrypt.CompareHashAndPassword(passwordHash, []byte(password))
 	return err == nil
+}
+
+func generatePasswordHash(pw string) ([]byte, error) {
+	// Use bcrypt to (automatically) salt and encrypt password string
+	return bcrypt.GenerateFromPassword([]byte(pw), 10)
 }
