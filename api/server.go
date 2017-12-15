@@ -29,20 +29,21 @@ func init() {
 	router.HandleFunc("/createGroup", renderCreateGroup)
 
 	// Register json API routes
-	router.HandleFunc("/api/signup", createStudent)
 	router.HandleFunc("/api/login", createCredentials)
-	router.Handle("/api/students", authMiddleware(readAllStudents, "")).Methods("GET")
+
+	router.HandleFunc("/api/signup", createStudent)
 	router.HandleFunc("/api/students", createStudent).Methods("POST")
-	router.HandleFunc("/api/students/{id}", readStudent)
+	router.Handle("/api/students", authMiddleware(readAllStudents, "student", "instructor")).Methods("GET")
+	router.Handle("/api/students/{id}", authMiddleware(readStudent, "student", "instructor"))
 
-	router.HandleFunc("/api/groups", readAllGroups).Methods("GET")
 	router.HandleFunc("/api/groups", createGroup).Methods("POST")
-	router.HandleFunc("/api/groups/{id}", readGroup)
+	router.Handle("/api/groups", authMiddleware(readAllGroups, "student", "instructor")).Methods("GET")
+	router.Handle("/api/groups/{id}", authMiddleware(readGroup, "student", "instructor"))
 
-	router.HandleFunc("/api/attendances", readAllAttendances).Methods("GET")
-	router.HandleFunc("/api/attendances/new/{student_id}/{presented}", getAttendanceToken).Methods("GET")
-	router.HandleFunc("/api/attendances/register", registerAttendanceToken).Methods("POST")
-	router.HandleFunc("/api/attendances/for/{student_id}", readAttendancesForStudent).Methods("GET")
+	router.Handle("/api/attendances", authMiddleware(readAllAttendances, "student", "instructor")).Methods("GET")
+	router.Handle("/api/attendances/new/{student_id}/{presented}", authMiddleware(getAttendanceToken, "student")).Methods("GET")
+	router.Handle("/api/attendances/register", authMiddleware(registerAttendanceToken, "instructor")).Methods("POST")
+	router.Handle("/api/attendances/for/{student_id}", authMiddleware(readAttendancesForStudent, "student", "instructor")).Methods("GET")
 
 	router.HandleFunc("/api/version", readVersion)
 
@@ -133,14 +134,15 @@ func createCredentials(w http.ResponseWriter, r *http.Request) {
 	// Load user from datastore
 	if student, err := getStudent(ctx, ID); err == nil {
 		if verifyPassword(password, student.Password) {
-			permissionGroups := []string{"student"}
-			credentials := NewCredentials(ID, permissionGroups)
-			token, err := createJWTToken(jwt.MapClaims{"credentials": credentials})
+			permissions := []string{"student"}
+			credentials := NewCredentials(ID, permissions)
+			expiryTime := time.Now().Add(3 * time.Hour)
+			token, err := createJWTToken(jwt.MapClaims{"credentials": credentials, "exp": expiryTime})
 			if err != nil {
 				sendErrorResponse(w, errors.New("JWT creation failed."), http.StatusInternalServerError)
 			}
 
-			response := map[string]interface{}{token: token}
+			response := map[string]interface{}{"token": token}
 			sendResponse(w, response, http.StatusOK)
 			return
 		}

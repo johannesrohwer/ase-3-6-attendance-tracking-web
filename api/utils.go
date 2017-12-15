@@ -14,22 +14,32 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func authMiddleware(next func(http.ResponseWriter, *http.Request), params ...string) http.Handler {
+// Middleware
+
+func authMiddleware(next func(http.ResponseWriter, *http.Request), validPermissionGroups ...string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		tS := r.Header.Get("Authorization")
 
 		if claims, err := validateJWTToken(tS); err == nil {
-			permissions := claims["permissions"].([]string)
-			// TODO: adjust permissions
-			if len(permissions) > 0 {
-				next(w, r)
-				return
+			credentials := claims["credentials"].(map[string]interface{})
+			permissions := credentials["permissions"].([]interface{})
+
+			// White listing approach that allows resource access if permission entry matches
+			for _, group := range validPermissionGroups {
+				for _, p := range permissions {
+					if group == p.(string) {
+						next(w, r)
+						return
+					}
+				}
 			}
 		}
 
 		sendErrorResponse(w, errors.New("Not authorized."), http.StatusUnauthorized)
 	})
 }
+
+// Helpers
 
 func loadTemplate(templateName string) (*template.Template, error) {
 
@@ -61,6 +71,8 @@ func sendResponse(w http.ResponseWriter, payload interface{}, status int) {
 	w.WriteHeader(status)
 	json.NewEncoder(w).Encode(payload)
 }
+
+// Encryption and Validation
 
 func createJWTToken(claims jwt.MapClaims) (*string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
