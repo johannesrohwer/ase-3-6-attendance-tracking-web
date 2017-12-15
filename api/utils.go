@@ -11,7 +11,24 @@ import (
 	"fmt"
 
 	"github.com/dgrijalva/jwt-go"
+	"golang.org/x/crypto/bcrypt"
 )
+
+func authMiddleware(next func(http.ResponseWriter, *http.Request)) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		tS := r.Header.Get("Authorization: Bearer")
+
+		if claims, err := validateJWTToken(tS); err == nil {
+			permissions := claims["permissions"].([]string)
+			if len(permissions) > 0 {
+				next(w, r)
+				return
+			}
+		}
+
+		sendErrorResponse(w, errors.New("Not authorized."), http.StatusUnauthorized)
+	})
+}
 
 func loadTemplate(templateName string) (*template.Template, error) {
 
@@ -60,6 +77,10 @@ func getSigningSecret() []byte {
 }
 
 func validateJWTToken(t string) (jwt.MapClaims, error) {
+	if t == "" {
+		return nil, errors.New("Empty JWT.")
+	}
+
 	token, _ := jwt.Parse(t, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
@@ -73,4 +94,9 @@ func validateJWTToken(t string) (jwt.MapClaims, error) {
 	}
 
 	return nil, errors.New("Invalid token.")
+}
+
+func verifyPassword(password string, passwordHash []byte) bool {
+	err := bcrypt.CompareHashAndPassword(passwordHash, []byte(password))
+	return err == nil
 }

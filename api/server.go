@@ -29,7 +29,7 @@ func init() {
 
 	// Register json API routes
 	router.HandleFunc("/api/signup", createStudent)
-	router.HandleFunc("/api/students", readAllStudents).Methods("GET")
+	router.Handle("/api/students", authMiddleware(readAllStudents)).Methods("GET")
 	router.HandleFunc("/api/students", createStudent).Methods("POST")
 	router.HandleFunc("/api/students/{id}", readStudent)
 
@@ -101,6 +101,49 @@ func readVersion(w http.ResponseWriter, r *http.Request) {
 	sendResponse(w, version, http.StatusOK)
 }
 
+// API Login
+
+func createCredentials(w http.ResponseWriter, r *http.Request) {
+	ctx := appengine.NewContext(r)
+
+	// Extract token from POST request
+	var request map[string]interface{}
+	rawBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		sendErrorResponse(w, err, http.StatusInternalServerError)
+		return
+	}
+
+	// Parse request into map
+	json.Unmarshal(rawBody, &request)
+	ID, ok := request["ID"].(string)
+	if !ok {
+		sendErrorResponse(w, errors.New("No ID provided."), http.StatusBadRequest)
+		return
+	}
+
+	password, ok := request["password"].(string)
+	if !ok {
+		sendErrorResponse(w, errors.New("No password provided."), http.StatusBadRequest)
+		return
+	}
+
+	// Load user from datastore
+	if student, err := getStudent(ctx, ID); err != nil {
+		if verifyPassword(password, student.Password()) {
+			p := []string{"student"}
+			credentials := NewCredentials(ID, p)
+			createJWTToken(jwt.MapClaims{"credentials": credentials})
+			return
+		}
+
+		sendErrorResponse(w, errors.New("Invalid password."), http.StatusForbidden)
+		return
+	}
+
+	// TODO: same thing for instructors
+}
+
 // API Student
 
 func createStudent(w http.ResponseWriter, r *http.Request) {
@@ -111,6 +154,9 @@ func createStudent(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	// Extract password
+	// TODO: ^^^
 
 	_, err := putStudent(ctx, student)
 	if err != nil {
