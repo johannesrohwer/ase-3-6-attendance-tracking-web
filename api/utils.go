@@ -14,6 +14,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// Middleware
+
 func authMiddleware(next func(http.ResponseWriter, *http.Request), validPermissionGroups ...string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		tS := r.Header.Get("Authorization")
@@ -36,6 +38,8 @@ func authMiddleware(next func(http.ResponseWriter, *http.Request), validPermissi
 		sendErrorResponse(w, errors.New("Not authorized."), http.StatusUnauthorized)
 	})
 }
+
+// Helpers
 
 func loadTemplate(templateName string) (*template.Template, error) {
 
@@ -67,6 +71,8 @@ func sendResponse(w http.ResponseWriter, payload interface{}, status int) {
 	w.WriteHeader(status)
 	json.NewEncoder(w).Encode(payload)
 }
+
+// Encryption and Validation
 
 func createJWTToken(claims jwt.MapClaims) (*string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
