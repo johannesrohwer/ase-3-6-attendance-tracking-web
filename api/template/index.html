@@ -85,7 +85,6 @@
 </div>
 
 
-
 <!-- Bootstrap core JavaScript -->
 <script src="static/jquery/jquery.min.js"></script>
 <script src="static/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -117,12 +116,17 @@
                     headers: new Headers()
                 }
 
+                if (this.id.length == 0) {
+                    alert("This is not a valid matriculation number.")
+                    return
+                }
+
 
                 fetch(url, params)
                         .then((resp) => resp.json())
                         .then(function (data) {
 
-                            if(Object.keys(data).length === 0 && data.constructor === Object) {
+                            if (Object.keys(data).length === 0 && data.constructor === Object) {
                                 alert("This is not a valid matriculation number.")
                             } else {
                                 sessionStorage.login = JSON.stringify(data)
