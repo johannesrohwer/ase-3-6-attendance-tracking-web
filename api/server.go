@@ -30,7 +30,7 @@ func init() {
 	// Register json API routes
 	router.HandleFunc("/api/signup", createStudent)
 	router.HandleFunc("/api/login", createCredentials)
-	router.HandleFunc("/api/students", readAllStudents).Methods("GET")
+	router.Handle("/api/students", authMiddleware(readAllStudents, "")).Methods("GET")
 	router.HandleFunc("/api/students", createStudent).Methods("POST")
 	router.HandleFunc("/api/students/{id}", readStudent)
 
@@ -132,14 +132,15 @@ func createCredentials(w http.ResponseWriter, r *http.Request) {
 	// Load user from datastore
 	if student, err := getStudent(ctx, ID); err == nil {
 		if verifyPassword(password, student.Password) {
-			p := []string{"student"}
-			credentials := NewCredentials(ID, p)
+			permissionGroups := []string{"student"}
+			credentials := NewCredentials(ID, permissionGroups)
 			token, err := createJWTToken(jwt.MapClaims{"credentials": credentials})
 			if err != nil {
 				sendErrorResponse(w, errors.New("JWT creation failed."), http.StatusInternalServerError)
 			}
 
-			sendResponse(w, token, http.StatusOK)
+			response := map[string]interface{}{token: token}
+			sendResponse(w, response, http.StatusOK)
 			return
 		}
 
