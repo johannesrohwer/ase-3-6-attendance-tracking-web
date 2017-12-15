@@ -155,7 +155,15 @@
             var self = this
             groupURL = "/api/groups/" + this.group
             attendanceURL = "/api/attendances/for/" + this.student_id
-            fetch(groupURL)
+            jwtToken = sessionStorage.getItem("token")
+
+            fetch(groupURL, {
+                method: 'get',
+                headers: {
+                    'Authorization': 'Basic ' + jwtToken,
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            })
                     .then((resp) => resp.json())
                     .then(function (data) {
 
