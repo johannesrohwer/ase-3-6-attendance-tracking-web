@@ -36,7 +36,7 @@ func init() {
 	router.Handle("/api/students/{id}", authMiddleware(readStudent, "student", "instructor"))
 
 	router.HandleFunc("/api/groups", createGroup).Methods("POST")
-	router.Handle("/api/groups", authMiddleware(readAllGroups, "student", "instructor")).Methods("GET")
+	router.HandleFunc("/api/groups", readAllGroups).Methods("GET")
 	router.Handle("/api/groups/{id}", authMiddleware(readGroup, "student", "instructor"))
 
 	router.Handle("/api/attendances", authMiddleware(readAllAttendances, "student", "instructor")).Methods("GET")
@@ -204,7 +204,20 @@ func createStudent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sendResponse(w, student, http.StatusCreated)
+	// Create autorization token
+	permissions := []string{"student"}
+	credentials := NewCredentials(ID, permissions)
+	expiryTime := time.Now().Add(3 * time.Hour)
+	token, err := createJWTToken(jwt.MapClaims{"credentials": credentials, "exp": expiryTime})
+	if err != nil {
+		sendErrorResponse(w, errors.New("JWT creation failed."), http.StatusInternalServerError)
+	}
+
+	response := struct {
+		Student
+		Token string `json:"token"`
+	}{Student: *student, Token: *token}
+	sendResponse(w, response, http.StatusCreated)
 }
 
 func readAllStudents(w http.ResponseWriter, r *http.Request) {
