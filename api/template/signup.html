@@ -84,7 +84,7 @@
                         </div>
                         <div class="form-group col-md-6">
                             <label>Matriculation Number</label>
-                            <input id="matriculationNumberForm" v-on:blur="validateMatriculationNumber"
+                            <input id="matriculationNumberForm" v-on:blur="validateMatriculationNumber(id)"
                                    class="form-control" v-model="id" placeholder="Matriculation Number">
                             <div class="invalid-feedback">
                                 Please input the correct matriculation number. A matriculation number has exactly 8
@@ -94,7 +94,7 @@
                     </div>
                     <div class="form-group">
                         <label>Full Name</label>
-                        <input id="fullNameForm" v-on:blur="validateName"
+                        <input id="fullNameForm" v-on:blur="validateName(name)"
                                class="form-control" v-model="name" placeholder="Full Name">
                         <div class="invalid-feedback">
                             Please input your full name.
@@ -113,7 +113,7 @@
                         </div>
                         <div class="form-group col-md-6">
                             <label>Confirm Password</label>
-                            <input id="confPwdForm" v-on:blur="validatePassword"
+                            <input id="confPwdForm" v-on:blur="validatePassword(pwd, conf_pwd)"
                                    class="form-control" v-model="conf_pwd" placeholder="Confirm Password"
                                    type="password">
                             <!-- TODO: Invalid feedback message missing.-->
@@ -137,6 +137,9 @@
 <script src="static/bootstrap/js/bootstrap.bundle.min.js"></script>
 <!-- include vue.js -->
 <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+
+<!-- include utilities -->
+<script src="static/js/utilities.js"></script>
 
 <!-- vue script-->
 <script src="static/js/student_signup.js"></script>

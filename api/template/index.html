@@ -79,7 +79,11 @@
                 <div class="form-row">
                     <div class="form-group col-md-6">
                         <label>Matriculation Number</label>
-                        <input class="form-control" v-model="id" placeholder="Matriculation Number">
+                        <input class="form-control" v-model="id" placeholder="Matriculation Number"
+                               id="matriculationNumberForm" v-on:blur="validateMatriculationNumber(id)">
+                        <div class="invalid-feedback">
+                            This is not a valid matriculation number.
+                        </div>
                     </div>
                     <div class="form-group col-md-6">
                         <label>Password</label>
@@ -101,6 +105,9 @@
 <script src="static/bootstrap/js/bootstrap.bundle.min.js"></script>
 <!-- include vue.js -->
 <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+
+<!-- include utilities -->
+<script src="static/js/utilities.js"></script>
 
 <!-- vue script-->
 <script src="static/js/login.js"></script>
