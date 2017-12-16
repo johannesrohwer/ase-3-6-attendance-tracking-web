@@ -45,3 +45,9 @@ function createAuthorizationHeader() {
     header.append("Authorization", token)
     return header
 }
+
+function isInt(value) {
+    return !isNaN(value) &&
+        parseInt(Number(value)) == value &&
+        !isNaN(parseInt(value, 10));
+}
