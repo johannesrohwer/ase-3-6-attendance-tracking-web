@@ -10,6 +10,8 @@ import (
 	"errors"
 	"fmt"
 
+	"time"
+
 	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -70,6 +72,18 @@ func sendResponse(w http.ResponseWriter, payload interface{}, status int) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	json.NewEncoder(w).Encode(payload)
+}
+
+func getBaseWeek() int {
+	// TODO: Define offset by configuration variable / environment variable
+	return 40
+}
+
+func getCurrentWeek() int {
+	// Return the ISO week number as week ID
+	offset := getBaseWeek()
+	_, week := time.Now().ISOWeek()
+	return week - offset
 }
 
 // Encryption and Validation

@@ -22,6 +22,10 @@ func attendanceKeyFromString(ctx context.Context, key string) *datastore.Key {
 	return datastore.NewKey(ctx, "Attendance", key, 0, nil)
 }
 
+func instructorKeyFromString(ctx context.Context, key string) *datastore.Key {
+	return datastore.NewKey(ctx, "Instructor", key, 0, nil)
+}
+
 // Convenience access methods
 
 func getStudent(ctx context.Context, ID string) (*Student, error) {
@@ -58,6 +62,40 @@ func putStudent(ctx context.Context, student Student) (*Student, error) {
 	return &student, nil
 }
 
+func getInstructor(ctx context.Context, ID string) (*Instructor, error) {
+	var instructor []Instructor
+	q := datastore.NewQuery("Instructor").Filter("ID =", ID)
+	if _, err := q.GetAll(ctx, &instructor); err != nil {
+		return nil, err
+	}
+
+	if len(instructor) == 0 {
+		return nil, errors.New("Not found.")
+	}
+
+	return &instructor[0], nil
+}
+
+func getInstructors(ctx context.Context) (*[]Instructor, error) {
+	q := datastore.NewQuery("Instructor")
+	var instructors []Instructor
+	if _, err := q.GetAll(ctx, &instructors); err != nil {
+		return nil, err
+	}
+
+	return &instructors, nil
+}
+
+func putInstructor(ctx context.Context, instructor Instructor) (*Instructor, error) {
+	key := instructorKeyFromString(ctx, instructor.ID)
+	_, err := datastore.Put(ctx, key, &instructor)
+	if err != nil {
+		return nil, err
+	}
+
+	return &instructor, nil
+}
+
 func getGroup(ctx context.Context, ID string) (*Group, error) {
 	var group []Group
 	q := datastore.NewQuery("Group").Filter("ID =", ID)
@@ -79,6 +117,10 @@ func getGroups(ctx context.Context) (*[]Group, error) {
 		return nil, err
 	}
 
+	if len(groups) == 0 {
+		return nil, errors.New("No groups found.")
+	}
+
 	return &groups, nil
 }
 
@@ -93,8 +135,20 @@ func putGroup(ctx context.Context, group Group) (*Group, error) {
 }
 
 func putAttendance(ctx context.Context, attendance Attendance) (*Attendance, error) {
-	// Duplicate IDs do not have to be checked since their values are guaranteed to be unique by JWT signature.
-	// TODO: check if student has duplicate attendance for specific week
+	// Duplicate IDs do not have to be checked since their values are guaranteed to be unique by the JWT signature.
+
+	// Check if an attendance record already exists for that week
+	if pastAttendances, err := getAttendancesForStudent(ctx, attendance.StudentID); err == nil {
+		for _, a := range *pastAttendances {
+			if a.WeekID == attendance.WeekID {
+				return &a, nil
+			}
+		}
+
+	} else {
+		return nil, err
+	}
+
 	key := attendanceKeyFromString(ctx, attendance.ID)
 	_, err := datastore.Put(ctx, key, &attendance)
 	if err != nil {
