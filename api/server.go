@@ -35,6 +35,10 @@ func init() {
 	router.Handle("/api/students", authMiddleware(readAllStudents, "student", "instructor")).Methods("GET")
 	router.Handle("/api/students/{id}", authMiddleware(readStudent, "student", "instructor"))
 
+	router.HandleFunc("/api/instructors", createInstructor).Methods("POST") // TODO: protect this route
+	router.Handle("/api/instructors", authMiddleware(readAllInstructors, "student", "instructor")).Methods("GET")
+	router.Handle("/api/instructors/{id}", authMiddleware(readInstructor, "student", "instructor"))
+
 	router.HandleFunc("/api/groups", createGroup).Methods("POST")
 	router.HandleFunc("/api/groups", readAllGroups).Methods("GET")
 	router.Handle("/api/groups/{id}", authMiddleware(readGroup, "student", "instructor"))
@@ -131,6 +135,7 @@ func createCredentials(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Load user from datastore
+	// Try student first
 	if student, err := getStudent(ctx, ID); err == nil {
 		if verifyPassword(password, student.Password) {
 			permissions := []string{"student"}
@@ -150,7 +155,27 @@ func createCredentials(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO: same thing for instructors
+	// If student failed, try to load an instructor
+	if instructor, err := getInstructor(ctx, ID); err == nil {
+		if verifyPassword(password, instructor.Password) {
+			permissions := []string{"instructor"}
+			credentials := NewCredentials(ID, permissions)
+			expiryTime := time.Now().Add(3 * time.Hour)
+			token, err := createJWTToken(jwt.MapClaims{"credentials": credentials, "exp": expiryTime})
+			if err != nil {
+				sendErrorResponse(w, errors.New("JWT creation failed."), http.StatusInternalServerError)
+			}
+
+			response := map[string]interface{}{"token": token}
+			sendResponse(w, response, http.StatusOK)
+			return
+		}
+
+		sendErrorResponse(w, errors.New("Invalid credentials."), http.StatusForbidden)
+		return
+	}
+
+	// Neither student nor instructor login was successful, throw an error.
 	sendErrorResponse(w, errors.New("Invalid credentials."), http.StatusForbidden)
 }
 
@@ -242,6 +267,90 @@ func readStudent(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sendResponse(w, student, http.StatusOK)
+}
+
+// API Instructor
+
+func createInstructor(w http.ResponseWriter, r *http.Request) {
+	ctx := appengine.NewContext(r)
+
+	// Extract password
+	var request map[string]interface{}
+	rawBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		sendErrorResponse(w, err, http.StatusInternalServerError)
+		return
+	}
+
+	// Parse request into map
+	json.Unmarshal(rawBody, &request)
+	ID, ok := request["id"].(string)
+	if !ok {
+		sendErrorResponse(w, errors.New("id empty."), http.StatusBadRequest)
+		return
+	}
+
+	name, ok := request["name"].(string)
+	if !ok {
+		sendErrorResponse(w, errors.New("name empty."), http.StatusBadRequest)
+		return
+	}
+
+	password, ok := request["password"].(string)
+	if !ok {
+		sendErrorResponse(w, errors.New("password empty."), http.StatusBadRequest)
+		return
+	}
+
+	instructor, err := NewInstructor(ID, name, password)
+	if err != nil {
+		sendErrorResponse(w, err, http.StatusInternalServerError)
+		return
+	}
+
+	if _, err := putInstructor(ctx, *instructor); err != nil {
+		sendErrorResponse(w, err, http.StatusInternalServerError)
+		return
+	}
+
+	// Create autorization token
+	permissions := []string{"instructor"}
+	credentials := NewCredentials(ID, permissions)
+	expiryTime := time.Now().Add(3 * time.Hour)
+	token, err := createJWTToken(jwt.MapClaims{"credentials": credentials, "exp": expiryTime})
+	if err != nil {
+		sendErrorResponse(w, errors.New("JWT creation failed."), http.StatusInternalServerError)
+	}
+
+	response := struct {
+		Instructor
+		Token string `json:"token"`
+	}{Instructor: *instructor, Token: *token}
+	sendResponse(w, response, http.StatusCreated)
+}
+
+func readAllInstructors(w http.ResponseWriter, r *http.Request) {
+	ctx := appengine.NewContext(r)
+	instructors, err := getInstructors(ctx)
+	if err != nil {
+		sendResponse(w, emptyArray(), http.StatusOK)
+		return
+	}
+
+	sendResponse(w, instructors, http.StatusOK)
+}
+
+func readInstructor(w http.ResponseWriter, r *http.Request) {
+	ctx := appengine.NewContext(r)
+	vars := mux.Vars(r)
+	id := vars["id"]
+	instructor, err := getInstructor(ctx, id)
+	if err != nil {
+		sendResponse(w, emptyObject(), http.StatusOK)
+		return
+	}
+
+	sendResponse(w, instructor, http.StatusOK)
 }
 
 // API Group
