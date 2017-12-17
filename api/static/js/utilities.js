@@ -36,8 +36,9 @@ function handleResponseError(err) {
 
 function createAuthorizationHeader() {
 
-    token = sessionStorage.getItem("token")
+    token = JSON.parse(sessionStorage.login).token
 
+    // TODO: Check if empty token really is undefined.
     if (token == undefined) {
         return new Headers()
     }

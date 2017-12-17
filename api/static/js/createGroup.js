@@ -50,7 +50,3 @@ var createGroup = new Vue({
             }
         }
     })
-
-
-
-    </script>

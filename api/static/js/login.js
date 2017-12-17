@@ -19,7 +19,7 @@ var login = new Vue({
                 "password": this.pwd
             };
 
-            url = "http://localhost:8080/api/students/" + this.id;
+            url = "http://localhost:8080/api/login";
             params = {
                 method: 'POST',
                 body: JSON.stringify(body),
@@ -32,9 +32,7 @@ var login = new Vue({
                     console.log(data)
 
                     sessionStorage.login = JSON.stringify(data)
-                    //window.location.replace("/dashboard");
-
-
+                    window.location.replace("/dashboard");
                 })
                 .catch(function (error) {
                     console.log(error)

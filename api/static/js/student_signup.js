@@ -62,7 +62,9 @@ var signup = new Vue({
             fetch(url, params)
                 .then((resp) => resp.json())
                 .then(function (data) {
-                    sessionStorage.login = JSON.stringify(data)
+                    sessionStorage.token = data.token;
+                    sessionStorage.userID = data.id;
+
                     window.location.replace("/dashboard");
                 })
                 .catch(function (error) {
