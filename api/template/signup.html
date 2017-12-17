@@ -66,68 +66,147 @@
 <div class="container">
     <div class="row">
         <div class="col-lg-12 text-center">
-            <h1 class="mt-5">Student Sign Up</h1>
-            <p class="lead">Please sign up if you'd wish to take part in the ASE Attendance System as a student.</p>
+            <h1 class="mt-5">Sign Up</h1>
+            <p class="lead">Please sign up if you'd wish to take part in the ASE Attendance System. You can participate
+                both as a student and an instructor.</p>
+            <br>
 
 
-            <div id="signup">
-                <div class="col-lg-6 offset-3">
+            <ul class="nav nav-tabs justify-content-center" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="student-tab" data-toggle="tab" href="#student" role="tab">Student</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="instructor-tab" data-toggle="tab" href="#instructor"
+                       role="tab">Instructor</a>
+                </li>
+            </ul>
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="student" role="tabpanel">
+                    <br><br>
 
+                    <div id="student_signup">
+                        <div class="col-lg-6 offset-3">
 
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label>Group Number</label>
-                            <select v-model="group_id" class="form-control">
-                                <option disabled value="">Select group number</option>
-                                <option v-for="item in group_options" :value="item">{{ item.id }}</option>
-                            </select>
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label>Matriculation Number</label>
-                            <input id="matriculationNumberForm" v-on:blur="validateMatriculationNumber(id)"
-                                   class="form-control" v-model="id" placeholder="Matriculation Number">
-                            <div class="invalid-feedback">
-                                Please input the correct matriculation number. A matriculation number has exactly 8
-                                characters and only contains digits.
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label>Group Number</label>
+                                    <select v-model="group_id" class="form-control">
+                                        <option disabled value="">Select group number</option>
+                                        <option v-for="item in group_options" :value="item">{{ item.id }}</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label>Matriculation Number</label>
+                                    <input id="matriculationNumberForm"
+                                           v-on:blur="validateMatriculationNumber(id, 'matriculationNumberForm')"
+                                           class="form-control" v-model="id" placeholder="Matriculation Number">
+                                    <div class="invalid-feedback">
+                                        Please input the correct matriculation number. A matriculation number has
+                                        exactly 8
+                                        characters and only contains digits.
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Full Name</label>
-                        <input id="fullNameForm" v-on:blur="validateName(name)"
-                               class="form-control" v-model="name" placeholder="Full Name">
-                        <div class="invalid-feedback">
-                            Please input your full name.
-                        </div>
-                    </div>
-
-                    <!-- Password fields. -->
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label>Password</label>
-                            <input id="pwdForm" class="form-control" v-model="pwd" placeholder="Password"
-                                   type="password">
-                            <div class="invalid-feedback">
-                                Your passwords are not matching.
+                            <div class="form-group">
+                                <label>Full Name</label>
+                                <input id="fullNameForm" v-on:blur="validateName(name, 'fullNameForm')"
+                                       class="form-control" v-model="name" placeholder="Full Name">
+                                <div class="invalid-feedback">
+                                    Please input your full name.
+                                </div>
                             </div>
+
+                            <!-- Password fields. -->
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label>Password</label>
+                                    <input id="pwdForm" class="form-control" v-model="pwd" placeholder="Password"
+                                           type="password">
+                                    <div class="invalid-feedback">
+                                        Your passwords are not matching.
+                                    </div>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label>Confirm Password</label>
+                                    <input id="confPwdForm" v-on:blur="validatePassword(pwd, conf_pwd, 'pwdForm', 'confPwdForm')"
+                                           class="form-control" v-model="conf_pwd" placeholder="Confirm Password"
+                                           type="password">
+                                    <!-- TODO: Invalid feedback message missing.-->
+                                </div>
+                            </div>
+
+
+                            <button v-on:click="submitData" type="button" class="btn btn-light">Sign Up</button>
+
                         </div>
-                        <div class="form-group col-md-6">
-                            <label>Confirm Password</label>
-                            <input id="confPwdForm" v-on:blur="validatePassword(pwd, conf_pwd)"
-                                   class="form-control" v-model="conf_pwd" placeholder="Confirm Password"
-                                   type="password">
-                            <!-- TODO: Invalid feedback message missing.-->
-                        </div>
+
                     </div>
 
-
-                    <button v-on:click="submitData" type="button" class="btn btn-light">Sign Up</button>
 
                 </div>
 
+
+                <div class="tab-pane fade" id="instructor">
+
+
+                    INSTRUCTOR
+
+                    <br><br>
+                    <div id="instructor_signup">
+                        <div class="col-lg-6 offset-3">
+                            <div class="form-group">
+                                <label>Matriculation Number</label>
+                                <input id="i_matriculationNumberForm"
+                                       v-on:blur="validateMatriculationNumber(id, 'i_matriculationNumberForm')"
+                                       class="form-control" v-model="id" placeholder="Matriculation Number">
+                                <div class="invalid-feedback">
+                                    Please input the correct matriculation number. A matriculation number has
+                                    exactly 8
+                                    characters and only contains digits.
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Full Name</label>
+                                <input id="i_fullNameForm" v-on:blur="validateName(name, 'i_fullNameForm')"
+                                       class="form-control" v-model="name" placeholder="Full Name">
+                                <div class="invalid-feedback">
+                                    Please input your full name.
+                                </div>
+                            </div>
+
+                            <!-- Password fields. -->
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label>Password</label>
+                                    <input id="i_pwdForm" class="form-control" v-model="pwd" placeholder="Password"
+                                           type="password">
+                                    <div class="invalid-feedback">
+                                        Your passwords are not matching.
+                                    </div>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label>Confirm Password</label>
+                                    <input id="i_confPwdForm"
+                                           v-on:blur="validatePassword(pwd, conf_pwd, 'i_pwdForm', 'i_confPwdForm')"
+                                           class="form-control" v-model="conf_pwd" placeholder="Confirm Password"
+                                           type="password">
+                                    <!-- TODO: Invalid feedback message missing.-->
+                                </div>
+                            </div>
+
+
+                            <button v-on:click="submitData" type="button" class="btn btn-light">Sign Up</button>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
             </div>
-
-
         </div>
     </div>
 </div>
@@ -142,7 +221,7 @@
 <script src="static/js/utilities.js"></script>
 
 <!-- vue script-->
-<script src="static/js/student_signup.js"></script>
+<script src="static/js/signup.js"></script>
 
 </body>
 

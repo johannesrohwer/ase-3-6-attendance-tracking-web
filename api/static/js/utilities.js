@@ -1,30 +1,30 @@
 // Checks if the two input passwords really are the same.
-function validatePassword(pwd, conf_pwd) {
+function validatePassword(pwd, conf_pwd, pwd_id, conf_pwd_id) {
     if (pwd == conf_pwd) {
-        $("#confPwdForm").removeClass("is-invalid")
-        $("#pwdForm").removeClass("is-invalid")
+        $("#" + pwd_id).removeClass("is-invalid");
+        $("#" + conf_pwd_id).removeClass("is-invalid");
         return true
     }
-    $("#confPwdForm").addClass("is-invalid")
-    $("#pwdForm").addClass("is-invalid")
+    $("#" + pwd_id).addClass("is-invalid");
+    $("#" + conf_pwd_id).addClass("is-invalid");
     return false
 }
 
-function validateName(name) {
+function validateName(name, id) {
     if (name) {
-        $('#fullNameForm').removeClass("is-invalid")
+        $("#" + id).removeClass("is-invalid");
         return true
     }
-    $('#fullNameForm').addClass("is-invalid")
+    $("#" + id).addClass("is-invalid");
     return false
 }
 
-function validateMatriculationNumber(matriculationNumber) {
+function validateMatriculationNumber(matriculationNumber, id) {
     if (matriculationNumber.length == 8 && (matriculationNumber.match(/^[0-9]+$/) != null)) {
-        $('#matriculationNumberForm').removeClass("is-invalid")
+        $("#" + id).removeClass("is-invalid");
         return true
     }
-    $('#matriculationNumberForm').addClass("is-invalid")
+    $("#" + id).addClass("is-invalid");
     return false
 }
 
@@ -36,14 +36,14 @@ function handleResponseError(err) {
 
 function createAuthorizationHeader() {
 
-    token = sessionStorage.token
+    token = sessionStorage.token;
 
     // TODO: Check if empty token really is undefined.
     if (token == undefined) {
         return new Headers()
     }
-    header = new Headers()
-    header.append("Authorization", token)
+    header = new Headers();
+    header.append("Authorization", token);
     return header
 }
 

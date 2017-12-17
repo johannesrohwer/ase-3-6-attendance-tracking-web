@@ -80,7 +80,7 @@
                     <div class="form-group col-md-6">
                         <label>Matriculation Number</label>
                         <input class="form-control" v-model="id" placeholder="Matriculation Number"
-                               id="matriculationNumberForm" v-on:blur="validateMatriculationNumber(id)">
+                               id="matriculationNumberForm" v-on:blur="validateMatriculationNumber(id, 'matriculationNumberForm')">
                         <div class="invalid-feedback">
                             This is not a valid matriculation number.
                         </div>
