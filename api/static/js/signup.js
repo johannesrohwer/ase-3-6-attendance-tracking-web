@@ -127,8 +127,7 @@ var instructor_signup = new Vue({
                     sessionStorage.token = data.token;
                     sessionStorage.userID = data.id;
 
-                    console.log(data)
-                    //window.location.replace("/dashboard");
+                    window.location.replace("/dashboard");
                 })
                 .catch(function (error) {
                     console.log(error)
