@@ -51,7 +51,7 @@ var signup = new Vue({
                 "password": this.pwd
             }
 
-            url = "http://localhost:8080/api/students"
+            url = "/api/students"
             params = {
                 method: 'POST',
                 body: JSON.stringify(body),
