@@ -48,6 +48,7 @@ func init() {
 	router.Handle("/api/attendances/register", authMiddleware(registerAttendanceToken, "instructor")).Methods("POST")
 	router.Handle("/api/attendances/for/{student_id}", authMiddleware(readAttendancesForStudent, "student", "instructor")).Methods("GET")
 
+	router.HandleFunc("/api/week/current", readCurrentWeek)
 	router.HandleFunc("/api/version", readVersion)
 
 	http.Handle("/", router)
@@ -105,6 +106,14 @@ func readVersion(w http.ResponseWriter, r *http.Request) {
 	version := NewVersion("v0.1", authors)
 
 	sendResponse(w, version, http.StatusOK)
+}
+
+func readCurrentWeek(w http.ResponseWriter, r *http.Request) {
+	currentWeekObject := map[string]interface{}{
+		"current_week": getCurrentWeek(),
+		"base_week":    getBaseWeek()}
+
+	sendResponse(w, currentWeekObject, http.StatusOK)
 }
 
 // API Login
@@ -404,7 +413,7 @@ func getAttendanceToken(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	studentID := vars["student_id"]
 	presented := vars["presented"] == "true"
-	currentWeek := "0" // TODO: replace placeholder week
+	currentWeek := string(getCurrentWeek())
 
 	student, err := getStudent(ctx, studentID)
 	if err != nil {
