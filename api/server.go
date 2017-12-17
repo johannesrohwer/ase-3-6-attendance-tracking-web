@@ -9,6 +9,8 @@ import (
 
 	"errors"
 
+	"strconv"
+
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
 	"google.golang.org/appengine"
@@ -413,7 +415,7 @@ func getAttendanceToken(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	studentID := vars["student_id"]
 	presented := vars["presented"] == "true"
-	currentWeek := string(getCurrentWeek())
+	currentWeek := strconv.Itoa(getCurrentWeek())
 
 	student, err := getStudent(ctx, studentID)
 	if err != nil {
@@ -472,12 +474,15 @@ func registerAttendanceToken(w http.ResponseWriter, r *http.Request) {
 			sendErrorResponse(w, err, http.StatusInternalServerError)
 		}
 
-		attendance := Attendance{ID: tID, WeekID: tWeekID, GroupID: tGroupID, StudentID: tStudentID, Presented: tPresented}
-		if _, err := putAttendance(ctx, attendance); err != nil {
+		newAttendance := Attendance{ID: tID, WeekID: tWeekID, GroupID: tGroupID, StudentID: tStudentID, Presented: tPresented}
+		if existingAttendance, err := putAttendance(ctx, newAttendance); err != nil {
 			sendErrorResponse(w, err, http.StatusInternalServerError)
+		} else if existingAttendance != nil {
+			sendResponse(w, existingAttendance, http.StatusOK)
+		} else {
+			sendResponse(w, newAttendance, http.StatusCreated)
 		}
 
-		sendResponse(w, attendance, http.StatusCreated)
 	} else {
 		sendErrorResponse(w, errors.New("Invalid token."), http.StatusInternalServerError)
 	}

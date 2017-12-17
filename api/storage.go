@@ -135,8 +135,20 @@ func putGroup(ctx context.Context, group Group) (*Group, error) {
 }
 
 func putAttendance(ctx context.Context, attendance Attendance) (*Attendance, error) {
-	// Duplicate IDs do not have to be checked since their values are guaranteed to be unique by JWT signature.
-	// TODO: check if student has duplicate attendance for specific week
+	// Duplicate IDs do not have to be checked since their values are guaranteed to be unique by the JWT signature.
+
+	// Check if an attendance record already exists for that week
+	if pastAttendances, err := getAttendancesForStudent(ctx, attendance.StudentID); err == nil {
+		for _, a := range *pastAttendances {
+			if a.WeekID == attendance.WeekID {
+				return &a, nil
+			}
+		}
+
+	} else {
+		return nil, err
+	}
+
 	key := attendanceKeyFromString(ctx, attendance.ID)
 	_, err := datastore.Put(ctx, key, &attendance)
 	if err != nil {
