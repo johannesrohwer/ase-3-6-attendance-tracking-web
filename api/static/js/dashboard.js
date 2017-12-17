@@ -47,5 +47,5 @@ var app = new Vue({
 
 function isStudentDashboard() {
     // TODO: FIXME
-    return false
+    return true
 }
