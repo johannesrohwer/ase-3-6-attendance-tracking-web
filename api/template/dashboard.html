@@ -67,51 +67,52 @@
     <div class="row">
         <div class="col-lg-12 text-center" id="greeting">
             <h1 class="mt-5">Dashboard</h1>
-            <div id="dashboard">
+            <div id="dashboard" v-if="isStudentDashboard()">
 
-                <p class="lead">
-                    <br>Hello {{name}}!
-                    <br>Below you can see information about your group and your attendance logs.
-                </p>
+                    <p class="lead">
 
-                <table class="table table-striped">
-                    <thead>
-                    <tr>
-                        <th>Your Group Number</th>
-                        <th>Time Slot</th>
-                        <th>Room</th>
+                        <br>Hello {{name}}!
+                        <br>Below you can see information about your group and your attendance logs.
+                    </p>
 
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>{{group}}</td>
-                        <td>{{time}}</td>
-                        <td>{{place}}</td>
-                    </tr>
-                    </tbody>
-                </table>
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>Your Group Number</th>
+                            <th>Time Slot</th>
+                            <th>Room</th>
 
-                <p class="lead">
-                    <br> Attendance Log
-                </p>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>{{group}}</td>
+                            <td>{{time}}</td>
+                            <td>{{place}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
 
-                <table class ="table table-striped">
-                    <thead>
-                    <tr>
-                        <th>Week Number</th>
-                        <th>Attended?</th>
-                        <th>Presented?</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr v-for="item in items">
-                        <td>{{item.week}}</td>
-                        <td>{{item.attended}}</td>
-                        <td>{{item.presented}}</td>
-                    </tr>
-                    </tbody>
-                </table>
+                    <p class="lead">
+                        <br> Attendance Log
+                    </p>
+
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>Week Number</th>
+                            <th>Attended?</th>
+                            <th>Presented?</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="item in items">
+                            <td>{{item.week_id}}</td>
+                            <td>ATTENDED</td>
+                            <td>{{item.presented}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
 
 
             </div>
@@ -127,48 +128,11 @@
 <!-- include vue.js -->
 <script src="https://cdn.jsdelivr.net/npm/vue"></script>
 
-<!-- vue script-->
+<!--utils -->
+<script src="static/js/utilities.js"></script>
 
-<script>
-
-    app = new Vue({
-        el: "#dashboard",
-        data: {
-            name: (function () {
-                var credentials = JSON.parse(sessionStorage.login)
-                return credentials.name
-            })(),
-            group: (function () {
-                var credentials = JSON.parse(sessionStorage.login)
-                return credentials.group_id
-            })(),
-            time: '',
-            place: '',
-            items: [
-                {week: 1, "attended": "yes", "presented" : "yes"}, {week: 2, "attended": "no", "presented" : "no"},
-                {week: 3, "attended": "yes", "presented" : "no"}
-            ]
-        },
-
-        beforeMount() {
-            var self = this
-            url = "http://localhost:8080/api/groups/" + this.group
-            fetch(url)
-                    .then((resp) => resp.json())
-                    .then(function (data) {
-
-                        self.time = data.time
-                        self.place = data.place
-
-                    })
-                    .catch(function (error) {
-                        console.log(error)
-                    })
-        }
-    });
-
-
-</script>
+<!-- vue script -->
+<script src="static/js/dashboard.js"></script>
 
 
 </body>
