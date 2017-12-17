@@ -10,7 +10,6 @@ var createGroup = new Vue({
         },
         methods: {
             submitData: function (event) {
-                // input validation
                 // TODO: missing input validation before submission
 
                 // send .post request

@@ -19,7 +19,7 @@ var login = new Vue({
                 "password": this.pwd
             };
 
-            url = "http://localhost:8080/api/login";
+            url = "/api/login";
             params = {
                 method: 'POST',
                 body: JSON.stringify(body),
