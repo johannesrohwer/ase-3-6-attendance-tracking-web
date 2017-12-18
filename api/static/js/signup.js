@@ -1,5 +1,5 @@
-var signup = new Vue({
-    el: '#signup',
+var student_signup = new Vue({
+    el: '#student_signup',
     data: {
         group_id: '',
         id: '',
@@ -9,8 +9,8 @@ var signup = new Vue({
         conf_pwd: ''
     },
     beforeMount() {
-        var self = this
-        url = "/api/groups"
+        var self = this;
+        url = "/api/groups";
         fetch(url)
             .then((resp) => resp.json())
             .then(function (data) {
@@ -24,7 +24,7 @@ var signup = new Vue({
     methods: {
         submitData: function (event) {
             // input validation
-            let err = false
+            let err = false;
             if (!validateName(this.name)) {
                 err = true
             }
@@ -49,14 +49,14 @@ var signup = new Vue({
                 "group_id": this.group_id.id,
                 "name": this.name,
                 "password": this.pwd
-            }
+            };
 
-            url = "/api/students"
+            url = "/api/students";
             params = {
                 method: 'POST',
                 body: JSON.stringify(body),
                 headers: new Headers()
-            }
+            };
 
 
             fetch(url, params)
@@ -73,6 +73,68 @@ var signup = new Vue({
 
         }
     }
-})
+});
+
+
+var instructor_signup = new Vue({
+    el: '#instructor_signup',
+    data: {
+        id: '',
+        name: '',
+        pwd: '',
+        conf_pwd: ''
+    },
+    methods: {
+        submitData: function (event) {
+            // input validation
+            let err = false;
+            if (!validateName(this.name)) {
+                err = true
+            }
+
+            if (!validateMatriculationNumber(this.id)) {
+                err = true
+            }
+
+            if (!validatePassword(this.pwd, this.conf_pwd)) {
+                err = true
+            }
+
+            if (err) {
+                alert("Please make sure you have filled out all fields correctly.")
+                return
+            }
+
+
+            // Send .post request
+            body = {
+                "id": this.id,
+                "name": this.name,
+                "password": this.pwd
+            };
+
+            url = "/api/instructors";
+            params = {
+                method: 'POST',
+                body: JSON.stringify(body),
+                headers: new Headers()
+            };
+
+
+            fetch(url, params)
+                .then((resp) => resp.json())
+                .then(function (data) {
+                    sessionStorage.token = data.token;
+                    sessionStorage.userID = data.id;
+
+                    window.location.replace("/dashboard");
+                })
+                .catch(function (error) {
+                    console.log(error)
+                })
+
+        }
+    }
+});
 
 
