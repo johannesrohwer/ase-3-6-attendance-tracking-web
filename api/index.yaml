@@ -1,0 +1,18 @@
+indexes:
+
+- kind: Group
+  properties:
+  - name: ID
+
+- kind: Student
+  properties:
+  - name: ID
+
+- kind: Attendance
+  properties:
+  - name: ID
+  - name: StudentID
+
+- kind: Instructor
+  properties:
+  - name: ID

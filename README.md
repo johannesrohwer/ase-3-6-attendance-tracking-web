@@ -13,10 +13,34 @@ package that is available [here](https://cloud.google.com/sdk/docs/). AFAIK `pyt
 ## Deploy
 To deploy the application to app engine make sure that you initialized `gcloud` and run
 
-`glcoud app deploy api/app.yaml`
-## Routes
-### /
-Returns the `index.html` template.
+`gcloud app deploy api/app.yaml`
+
+## Frontend Routes
+TODO
+
+## API Routes
+### Authorization
+Certain routes require special authorization. The token that is required to access those routes can be acquired via
+`/api/login` and has to be added in the `Authorization` header of every request to the protected routes.
+ 
+### `/api/login`
+A POST to this route with a payload of
+
+`{"id": "12345678", "password": "suchSecureMuchSafe"}`
+
+
+will answer with a JWT token that is passed via a JSON object.
+
+`{"token": "<base64 encoded JWT>"}`
+
+This token contains access permission information and should
+be send with every request as a `Authorization` header.
+
+### `/api/signup`
+### `/api/students`
+### `/api/groups`
+### `/api/attendances`
+
 
 ### /api/version
 Returns a JSON encoded version object that includes authors and version number.
