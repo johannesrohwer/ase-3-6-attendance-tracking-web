@@ -54,3 +54,8 @@ such as regular expressions.
 
 The repository containing the Android application can be found here:
 https://github.com/PSchmiedmayer/ase-3-6-attendance-tracking-android
+
+## Raspberry Pi Repository
+
+The repository containing the Raspberry Pi implementation can be found here:
+https://github.com/johannesrohwer/ase-3-6-attendance-tracking-pi
