@@ -1,9 +1,9 @@
 # ase-3-6-attendance-tracking-web
 ## Install
-Make sure you add the repository under 
-`$GOPATH/src/github.com/johannesrohwer/ase-3-6-attendance-tracking-web`. 
+Make sure you add the repository under
+`$GOPATH/src/github.com/johannesrohwer/ase-3-6-attendance-tracking-web`.
 ~~In order to run the project locally add the required dependencies via `dep ensure`
-([dep documentation](http://dep.com))~~ (use go get for now) and execute: 
+([dep documentation](http://dep.com))~~ (use go get for now) and execute:
 
 `dev_appserver.py api/app.yaml`
 
@@ -22,7 +22,7 @@ TODO
 ### Authorization
 Certain routes require special authorization. The token that is required to access those routes can be acquired via
 `/api/login` and has to be added in the `Authorization` header of every request to the protected routes.
- 
+
 ### `/api/login`
 A POST to this route with a payload of
 
@@ -49,3 +49,8 @@ Returns a JSON encoded version object that includes authors and version number.
 ### GorillaMux
 [GorillaMux](http://www.gorillatoolkit.org/pkg/mux) adds extended functionality to URL routing
 such as regular expressions.
+
+## Android App Repository
+
+The repository containing the Android application can be found here:
+https://github.com/PSchmiedmayer/ase-3-6-attendance-tracking-android
