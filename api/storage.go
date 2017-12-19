@@ -145,9 +145,8 @@ func putAttendance(ctx context.Context, attendance Attendance) (*Attendance, err
 			}
 		}
 
-	} else {
-		return nil, err
 	}
+	// No else: if no attendance records are found, we are good to go.
 
 	key := attendanceKeyFromString(ctx, attendance.ID)
 	_, err := datastore.Put(ctx, key, &attendance)
