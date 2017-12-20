@@ -145,9 +145,11 @@ func putAttendance(ctx context.Context, attendance Attendance) (*Attendance, err
 			}
 		}
 
-	} else {
-		return nil, err
 	}
+	// FIXME dirty fix
+	// else {
+	//	return nil, nil
+	// }
 
 	key := attendanceKeyFromString(ctx, attendance.ID)
 	_, err := datastore.Put(ctx, key, &attendance)
