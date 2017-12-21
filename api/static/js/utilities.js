@@ -52,3 +52,7 @@ function isInt(value) {
         parseInt(Number(value)) == value &&
         !isNaN(parseInt(value, 10));
 }
+
+function logOut() {
+    sessionStorage.clear()
+}
