@@ -10,8 +10,6 @@ var login = new Vue({
         start_login: function (event) {
             let self = this;
 
-            console.log("derp");
-
             // Perform (light) input validation.
             if (!validateMatriculationNumber(this.id)) {
                 return
