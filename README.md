@@ -32,7 +32,7 @@ to `application/json`.
 ### Authorization
 Certain routes require special authorization. The token that is required to access those routes can be acquired via
 `/api/login` and has to be added in the `Authorization` header of every request to the protected routes.
- 
+
 ### `/api/login`
 In order to log in send an `HTTP POST` request and attach the following payload:
 ```json
