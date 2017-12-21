@@ -325,7 +325,7 @@ func createInstructor(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Create autorization token
+	// Create authorization token
 	permissions := []string{"instructor"}
 	credentials := NewCredentials(ID, permissions)
 	expiryTime := time.Now().Add(3 * time.Hour)
@@ -428,7 +428,7 @@ func getAttendanceToken(w http.ResponseWriter, r *http.Request) {
 
 	JWTObject := map[string]interface{}{}
 
-	// Prepare claims for JQT
+	// Prepare claims for JWT
 	expiryTime := time.Now().Add(24 * time.Hour) // One day expiration time
 	claims := jwt.MapClaims{
 		"exp":        expiryTime,
