@@ -2,11 +2,13 @@ var login = new Vue({
     el: '#login',
     data: {
         id: "",
-        pwd: ""
+        pwd: "",
+        alertMessage: ""
 
     },
     methods: {
         start_login: function (event) {
+            let self = this;
 
             // Perform (light) input validation.
             if (!validateMatriculationNumber(this.id)) {
@@ -27,15 +29,16 @@ var login = new Vue({
             };
 
             fetch(url, params)
-                .then((resp) => resp.json())
+                .then(response => { return response.ok ? response : Promise.reject(response.statusText);})
+                .then(response => response.json())
                 .then(function (data) {
-                    console.log(data)
-
-                    sessionStorage.login = JSON.stringify(data)
+                    sessionStorage.userID = self.id;
+g                    sessionStorage.token = data.token;
                     window.location.replace("/dashboard");
                 })
                 .catch(function (error) {
-                    console.log(error)
+                    console.log(error);
+                    self.alertMessage = error
                 })
         }
     }

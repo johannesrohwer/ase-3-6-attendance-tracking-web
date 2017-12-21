@@ -76,6 +76,9 @@
 
 
             <div class="col-lg-6 offset-3">
+                <div class="alert alert-danger" v-if="alertMessage">
+                    <strong>Error!</strong> {{alertMessage}}
+                </div>
                 <div class="form-row">
                     <div class="form-group col-md-6">
                         <label>Matriculation Number</label>

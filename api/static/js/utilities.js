@@ -36,13 +36,13 @@ function handleResponseError(err) {
 
 function createAuthorizationHeader() {
 
-    token = sessionStorage.token;
+    let token = sessionStorage.token;
 
     // TODO: Check if empty token really is undefined.
     if (token == undefined) {
         return new Headers()
     }
-    header = new Headers();
+    let header = new Headers();
     header.append("Authorization", token);
     return header
 }

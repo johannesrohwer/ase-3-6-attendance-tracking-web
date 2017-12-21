@@ -64,6 +64,7 @@ var student_signup = new Vue({
                 .then(function (data) {
                     sessionStorage.token = data.token;
                     sessionStorage.userID = data.id;
+                    sessionStorage.groupID = data.group_id;
 
                     window.location.replace("/dashboard");
                 })

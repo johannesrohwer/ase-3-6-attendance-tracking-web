@@ -3,7 +3,7 @@ var app = new Vue({
     data: {
         userID: sessionStorage.userID,
         name: '',
-        group: '',
+        group: sessionStorage.groupID,
         time: '',
         place: '',
         items: []
@@ -19,9 +19,11 @@ var app = new Vue({
             headers: createAuthorizationHeader()
         };
 
+        // Fetch data about the current student
         fetch(studentURL, params)
+            .then(response => { return response.ok ? response : Promise.reject(response.statusText);})
             .then(response => response.json())
-            .then(function (data) {
+            .then(data => {
                 self.name = data.name;
                 self.group = data.group_id;
                 groupURL = "/api/groups/" + self.group;
