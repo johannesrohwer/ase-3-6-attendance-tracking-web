@@ -10,6 +10,8 @@ var login = new Vue({
         start_login: function (event) {
             let self = this;
 
+            console.log("derp");
+
             // Perform (light) input validation.
             if (!validateMatriculationNumber(this.id)) {
                 return
@@ -33,7 +35,7 @@ var login = new Vue({
                 .then(response => response.json())
                 .then(function (data) {
                     sessionStorage.userID = self.id;
-g                    sessionStorage.token = data.token;
+                    sessionStorage.token = data.token;
                     window.location.replace("/dashboard");
                 })
                 .catch(function (error) {
