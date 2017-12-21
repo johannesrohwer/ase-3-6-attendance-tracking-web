@@ -31,12 +31,12 @@ var login = new Vue({
             fetch(url, params)
                 .then(response => { return response.ok ? response : Promise.reject(response.statusText);})
                 .then(response => response.json())
-                .then(function (data) {
+                .then(data => {
                     sessionStorage.userID = self.id;
                     sessionStorage.token = data.token;
                     window.location.replace("/dashboard");
                 })
-                .catch(function (error) {
+                .catch(error => {
                     console.log(error);
                     self.alertMessage = error
                 })
