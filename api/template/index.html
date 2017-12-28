@@ -44,7 +44,6 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
             <ul class="navbar-nav ml-auto">
-
                 <li class="nav-item active">
                     <a class="nav-link" href="/login">Login</a>
                 </li>
@@ -77,7 +76,6 @@
                 you can always <a href="/signup">sign up</a>.
             </p>
 
-
             <div class="col-lg-6 offset-3">
                 <div class="alert alert-danger" v-if="alertMessage">
                     <strong>Error!</strong> {{alertMessage}}
@@ -86,7 +84,8 @@
                     <div class="form-group col-md-6">
                         <label>Matriculation Number</label>
                         <input class="form-control" v-model="id" placeholder="Matriculation Number"
-                               id="matriculationNumberForm" v-on:blur="validateMatriculationNumber(id, 'matriculationNumberForm')">
+                               id="matriculationNumberForm"
+                               v-on:blur="isValidMatriculationNumber(id, 'matriculationNumberForm')">
                         <div class="invalid-feedback">
                             This is not a valid matriculation number.
                         </div>
@@ -97,9 +96,7 @@
                                placeholder="Password">
                     </div>
                 </div>
-
                 <button v-on:click="start_login" type="button" class="btn btn-light">Login</button>
-
             </div>
         </div>
     </div>

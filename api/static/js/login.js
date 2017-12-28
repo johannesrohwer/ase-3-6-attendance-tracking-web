@@ -11,7 +11,7 @@ var login = new Vue({
             let self = this;
 
             // Perform (light) input validation.
-            if (!validateMatriculationNumber(this.id)) {
+            if (!isValidMatriculationNumber(this.id)) {
                 return
             }
 
@@ -24,12 +24,14 @@ var login = new Vue({
             url = "/api/login";
             params = {
                 method: 'POST',
-                body: JSON.stringify(body),
+                body: JSON.stringify(body),cu
                 headers: createAuthorizationHeader()
             };
 
             fetch(url, params)
-                .then(response => { return response.ok ? response : Promise.reject(response.statusText);})
+                .then(response => {
+                    return response.ok ? response : Promise.reject(response.statusText);
+                })
                 .then(response => response.json())
                 .then(function (data) {
                     sessionStorage.userID = self.id;
