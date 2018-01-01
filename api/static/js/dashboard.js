@@ -6,42 +6,59 @@ var app = new Vue({
         group: sessionStorage.groupID,
         time: '',
         place: '',
-        items: []
+        attendances: [],
+        currentWeek: '',
+        baseWeek: ''
     },
     beforeMount() {
-        var self = this
-        studentURL = "/api/students/" + self.userID;
-        groupURL = "";
-        attendanceURL = "/api/attendances/for/" + self.userID;
+        let self = this;
 
-        params = {
+        // Fetch current week and prepare "empty" attendances
+        let weekURL = "/api/week/current";
+        let weekPromise = fetch(weekURL)
+            .then(response => {
+                return response.ok ? response : Promise.reject(response.statusText);
+            })
+            .then(response => response.json())
+            .then(data => {
+                self.currentWeek = data.current_week;
+                self.baseWeek = data.base_week;
+            });
+
+
+        // Fetch data about the current student and the attendance data
+        let studentURL = "/api/students/" + self.userID;
+        let attendanceURL = "/api/attendances/for/" + self.userID + "?missing_attendances=true";
+
+        let params = {
             method: 'GET',
             headers: createAuthorizationHeader()
         };
 
-        // Fetch data about the current student
         fetch(studentURL, params)
-            .then(response => { return response.ok ? response : Promise.reject(response.statusText);})
+            .then(response => {
+                return response.ok ? response : Promise.reject(response.statusText);
+            })
             .then(response => response.json())
             .then(data => {
                 self.name = data.name;
                 self.group = data.group_id;
-                groupURL = "/api/groups/" + self.group;
+                return "/api/groups/" + self.group;
             })
-            .then(() => fetch(groupURL, params))
+            .then(groupURL => fetch(groupURL, params))
             .then(response => response.json())
-            .then(function (data) {
+            .then(data => {
                 self.place = data.place;
                 self.time = data.time;
             })
-        . then(() => fetch(attendanceURL, params))
+            .then(() => fetch(attendanceURL, params))
             .then(response => response.json())
-            .then(function (data) {
-                self.items = data
-            }).catch(function(error) {
+            .then(data => {
+                self.attendances = data
+            }).catch(error => {
                 console.log(error)
-            }
-        )
+            });
+
     }
 
 });

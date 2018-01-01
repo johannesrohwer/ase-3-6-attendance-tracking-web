@@ -76,14 +76,14 @@ func sendResponse(w http.ResponseWriter, payload interface{}, status int) {
 
 func getBaseWeek() int {
 	// TODO: Define offset by configuration variable / environment variable
-	return 40
+	return 1
 }
 
 func getCurrentWeek() int {
 	// Return the ISO week number as week ID
 	offset := getBaseWeek()
 	_, week := time.Now().ISOWeek()
-	return week - offset
+	return week - offset + 5 // FIXME: the +5 is just for debugging
 }
 
 // Encryption and Validation

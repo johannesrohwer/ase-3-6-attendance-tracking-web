@@ -11,6 +11,8 @@ import (
 
 	"strconv"
 
+	"sort"
+
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
 	"google.golang.org/appengine"
@@ -504,10 +506,44 @@ func readAttendancesForStudent(w http.ResponseWriter, r *http.Request) {
 	ctx := appengine.NewContext(r)
 	vars := mux.Vars(r)
 	studentID := vars["student_id"]
+
 	attendances, err := getAttendancesForStudent(ctx, studentID)
 	if err != nil {
-		sendResponse(w, emptyArray(), http.StatusNotFound)
+		sendResponse(w, emptyArray(), http.StatusInternalServerError)
 		return
+	}
+
+	// Check if empty attendances (absences) should be added to the response
+	showMissingAttendances := r.URL.Query().Get("missing_attendances")
+	if showMissingAttendances == "true" {
+		// Create list of attendances that should be there
+		currentWeek := getCurrentWeek()
+		missingWeekIDs := map[string]string{}
+		for i := 1; i <= currentWeek; i++ {
+			currentWeekID := strconv.Itoa(i)
+			missingWeekIDs[currentWeekID] = currentWeekID
+		}
+
+		// Tick off attendances that are actually there
+		for _, attendance := range *attendances {
+			currentWeekID := attendance.WeekID
+			delete(missingWeekIDs, currentWeekID)
+		}
+
+		// Add empty attendances for the missing ones
+		paddedAttendances := *attendances
+		for _, missingWeekID := range missingWeekIDs {
+			emptyAttendance := Attendance{ID: "-1", WeekID: missingWeekID}
+			paddedAttendances = append(paddedAttendances, emptyAttendance)
+		}
+
+		// Make sure that []attendances are sorted
+		sort.Sort(ByWeek(paddedAttendances))
+		attendances = &paddedAttendances
+	}
+
+	if len(*attendances) == 0 {
+		sendResponse(w, emptyArray(), http.StatusOK)
 	}
 
 	sendResponse(w, attendances, http.StatusOK)
