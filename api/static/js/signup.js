@@ -25,15 +25,15 @@ var student_signup = new Vue({
         submitData: function (event) {
             // input validation
             let err = false;
-            if (!validateName(this.name)) {
+            if (!isValidName(this.name)) {
                 err = true
             }
 
-            if (!validateMatriculationNumber(this.id)) {
+            if (!isValidMatriculationNumber(this.id)) {
                 err = true
             }
 
-            if (!validatePassword(this.pwd, this.conf_pwd)) {
+            if (!isValidPassword(this.pwd, this.conf_pwd)) {
                 err = true
             }
 
@@ -89,15 +89,15 @@ var instructor_signup = new Vue({
         submitData: function (event) {
             // input validation
             let err = false;
-            if (!validateName(this.name)) {
+            if (!isValidName(this.name)) {
                 err = true
             }
 
-            if (!validateMatriculationNumber(this.id)) {
+            if (!isValidMatriculationNumber(this.id)) {
                 err = true
             }
 
-            if (!validatePassword(this.pwd, this.conf_pwd)) {
+            if (!isValidPassword(this.pwd, this.conf_pwd)) {
                 err = true
             }
 

@@ -1,51 +1,56 @@
-
+// Vue component that holds the creating of groups bindings.
 var createGroup = new Vue({
-        el: '#createGroup',
-        data: {
-            group_id: '',
-            name: '',
-            time: '',
-            place: '',
-            instructor_id: ''
-        },
-        methods: {
-            submitData: function (event) {
-                // TODO: missing input validation before submission
+    el: '#createGroup',
+    data: {
+        group_id: '',
+        name: '',
+        time: '',
+        place: '',
+        instructor_id: ''
+    },
+    methods: {
+        // Submits the form to the REST API. Previously performs minor input validation.
+        // TODO: improve input validation, e.g. the Room and Time slot format.
+        submitData: function (event) {
 
-                // send .post request
-                body = {
-                    "id": this.group_id,
-                    "time": this.time,
-                    "place": this.place,
-                    "instructor_id": this.instructor_id
-                }
+            // Perform (light) input validation.
+            let err = false;
 
-                url = "/api/groups"
-                params = {
-                    method: 'POST',
-                    body: JSON.stringify(body),
-                    headers: new Headers()
-                }
+            if (!isValidGroupNumber()) {
+                err = true
+            }
 
-                fetch(url, params)
-                    .then((resp) => resp.json())
-                    .then(function (data) {
-                        alert("Your group has been set up.")
-
-                    })
-                    .catch(function (error) {
-                        console.log(error)
-                        alert("There has been an issue creating your tutorial group. Please try again.")
-                    })
-            },
-            validateGroupNumber: function() {
-                // TODO: So far only checking if the group number is an integer.
-                if (isInt(this.group_id)) {
-                    $('#groupForm').removeClass("is-invalid")
-                    return
-                }
-                $('#groupForm').addClass("is-invalid")
+            if (err) {
+                alert("Please make sure you have filled out all fields correctly.");
                 return
             }
+
+            // Fix body and params for POST request, then send it.
+            body = {
+                "id": this.group_id,
+                "time": this.time,
+                "place": this.place,
+                "instructor_id": this.instructor_id
+            };
+
+            url = "/api/groups";
+            params = {
+                method: 'POST',
+                body: JSON.stringify(body),
+                headers: new Headers()
+            };
+
+            // TODO: Instead of showing alerts, e.g. redirect the user to a certain page, like the dashboard.
+            fetch(url, params)
+                .then((resp) => resp.json())
+                .then(function (data) {
+                    alert("Your group has been set up.")
+
+                })
+                .catch(function (error) {
+                    console.log(error);
+                    alert("There has been an issue creating your tutorial group. Please try again.")
+                })
         }
-    })
+    }
+});

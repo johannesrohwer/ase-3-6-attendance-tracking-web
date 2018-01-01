@@ -44,7 +44,6 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
             <ul class="navbar-nav ml-auto">
-
                 <li class="nav-item">
                     <a class="nav-link" href="/login">Login</a>
                 </li>
@@ -71,17 +70,17 @@
         <div class="col-lg-12 text-center">
             <h1 class="mt-5">Create a Tutor Group</h1>
             <BR>
-            <p class="lead">If you are a tutor, you can use the following form to register your tutor group.
-                <BR>Please make sure to fill out all fields accordingly.</p>
-
+            <p class="lead">
+                If you are a tutor, you can use the following form to register your tutor group.
+                <BR>Please make sure to fill out all fields accordingly.
+            </p>
             <div id="createGroup">
-
                 <div class="col-lg-6 offset-3">
                     <form>
                         <div class="form-row">
                             <div class="form-group col-md-6">
                                 <label>Group Number</label>
-                                <input id="groupForm" v-model="group_id" v-on:blur="validateGroupNumber"
+                                <input id="groupForm" v-model="group_id" v-on:blur="isValidGroupNumber"
                                        class="form-control" placeholder="e.g. 1">
                                 <div class="invalid-feedback">
                                     Please pick an integer number, for example 2.
@@ -105,16 +104,12 @@
                             <label>Instructor ID</label>
                             <input v-model="instructor_id" class="form-control" placeholder="e.g. current ID">
                         </div>
-
-
                         <button v-on:click="submitData" type="button" class="btn btn-light">Create Tutorial Group
                         </button>
                     </form>
                 </div>
 
             </div>
-
-
         </div>
     </div>
 </div>

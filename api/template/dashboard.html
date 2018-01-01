@@ -44,7 +44,6 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
             <ul class="navbar-nav ml-auto">
-
                 <li class="nav-item">
                     <a class="nav-link" href="/login">Login</a>
                 </li>
@@ -71,56 +70,49 @@
         <div class="col-lg-12 text-center" id="greeting">
             <h1 class="mt-5">Dashboard</h1>
             <div id="dashboard" v-if="isStudentDashboard()">
+                <p class="lead">
+                    <br>Hello {{name}}!
+                    <br>Below you can see information about your group and your attendance logs.
+                </p>
 
-                    <p class="lead">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Group Number</th>
+                        <th>Time Slot</th>
+                        <th>Room</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>{{group}}</td>
+                        <td>{{time}}</td>
+                        <td>{{place}}</td>
+                    </tr>
+                    </tbody>
+                </table>
 
-                        <br>Hello {{name}}!
-                        <br>Below you can see information about your group and your attendance logs.
-                    </p>
+                <p class="lead">
+                    <br> Attendance Log
+                </p>
 
-                    <table class="table table-striped">
-                        <thead>
-                        <tr>
-                            <th>Your Group Number</th>
-                            <th>Time Slot</th>
-                            <th>Room</th>
-
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <td>{{group}}</td>
-                            <td>{{time}}</td>
-                            <td>{{place}}</td>
-                        </tr>
-                        </tbody>
-                    </table>
-
-                    <p class="lead">
-                        <br> Attendance Log
-                    </p>
-
-                    <table class="table table-striped">
-                        <thead>
-                        <tr>
-                            <th>Week Number</th>
-                            <th>Attended?</th>
-                            <th>Presented?</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr v-for="item in items">
-                            <td>{{item.week_id}}</td>
-                            <td>ATTENDED</td>
-                            <td>{{item.presented}}</td>
-                        </tr>
-                        </tbody>
-                    </table>
-
-
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Week Number</th>
+                        <th>Attended?</th>
+                        <th>Presented?</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="item in items">
+                        <td>{{item.week_id}}</td>
+                        <td>yes</td>
+                        <td>{{item.presented}}</td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
-
-
         </div>
     </div>
 </div>

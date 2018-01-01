@@ -1,3 +1,4 @@
+// Vue app holding the dashboard bindings.
 var app = new Vue({
     el: "#dashboard",
     data: {
@@ -8,8 +9,11 @@ var app = new Vue({
         place: '',
         items: []
     },
+    // Fetch all needed information for the dashboard before the page mounts.
     beforeMount() {
-        var self = this
+        var self = this;
+
+        // Set URLs.
         studentURL = "/api/students/" + self.userID;
         groupURL = "";
         attendanceURL = "/api/attendances/for/" + self.userID;
@@ -19,7 +23,7 @@ var app = new Vue({
             headers: createAuthorizationHeader()
         };
 
-        // Fetch data about the current student
+        // Fetch data about the current student, then get information about the group and attendances.
         fetch(studentURL, params)
             .then(response => { return response.ok ? response : Promise.reject(response.statusText);})
             .then(response => response.json())
@@ -43,11 +47,10 @@ var app = new Vue({
             }
         )
     }
-
 });
 
 
 function isStudentDashboard() {
-    // TODO: FIXME
+    // TODO: Currently, only the student dashboard is shown, we don't have an instructor dashboard yet.
     return true
 }
