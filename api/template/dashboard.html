@@ -96,22 +96,47 @@
                     <br> Attendance Log
                 </p>
 
-                <table class="table table-striped">
-                    <thead>
-                    <tr>
-                        <th>Week Number</th>
-                        <th>Attended?</th>
-                        <th>Presented?</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr v-for="item in items">
-                        <td>{{item.week_id}}</td>
-                        <td>yes</td>
-                        <td>{{item.presented}}</td>
-                    </tr>
-                    </tbody>
-                </table>
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>Your Group Number</th>
+                            <th>Time Slot</th>
+                            <th>Room</th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>{{group}}</td>
+                            <td>{{time}}</td>
+                            <td>{{place}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <p class="lead">
+                        <br> Attendance Log
+                    </p>
+
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>Week Number</th>
+                            <th>Attended?</th>
+                            <th>Presented?</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="attendance in attendances">
+                            <td>{{attendance.week_id}}</td>
+                            <td v-if="attendance.id == '-1'">&#x2717;</td>
+                            <td v-else>&#x2714;</td>
+                            <td v-if="attendance.presented">&#x2714;</td>
+                            <td v-else>&#x2717;</td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+
             </div>
         </div>
     </div>

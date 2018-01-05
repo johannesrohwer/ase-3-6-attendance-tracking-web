@@ -165,7 +165,7 @@ func getAttendancesForStudent(ctx context.Context, studentID string) (*[]Attenda
 	}
 
 	if len(attendances) == 0 {
-		return nil, errors.New("Not found.")
+		return &[]Attendance{}, nil
 	}
 
 	return &attendances, nil

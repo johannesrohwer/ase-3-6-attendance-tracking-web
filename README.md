@@ -131,6 +131,8 @@ later on be registered by an instructor.
 To fetch a new attendance token the user must be logged in as a student and perform an `HTTP GET`
 to `/api/attendances/new/{student_id}/{presented}` where the presented option is a boolean (`true or false`)
 that indicates if a student presented an exercise in this week.
+To fetch all attendances for a particular student an `HTTP GET` request to `/api/attendances/for/{student_id}` is required.
+An optional query parameter `?missing_attendances=true` can be added to show dummy entries for weeks where the student was absent.
 
 When an instructor wants to register a students attendance token as valid it has to be send via `HTTP POST`
 to `/api/attendances/register` as a payload:
