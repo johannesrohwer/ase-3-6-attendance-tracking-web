@@ -1,4 +1,4 @@
-var student_signup = new Vue({
+let student_signup = new Vue({
     el: '#student_signup',
     data: {
         group_id: '',
@@ -9,7 +9,7 @@ var student_signup = new Vue({
         conf_pwd: ''
     },
     beforeMount() {
-        var self = this;
+        let self = this;
         url = "/api/groups";
         fetch(url)
             .then((resp) => resp.json())
@@ -23,7 +23,7 @@ var student_signup = new Vue({
     },
     methods: {
         submitData: function (event) {
-            // input validation
+            // Input validation
             let err = false;
             if (!isValidName(this.name)) {
                 err = true
@@ -43,29 +43,28 @@ var student_signup = new Vue({
             }
 
 
-            // Send .post request
-            body = {
+            let body = {
                 "id": this.id,
                 "group_id": this.group_id.id,
                 "name": this.name,
                 "password": this.pwd
             };
 
-            url = "/api/students";
-            params = {
+            let signupURL = "/api/students";
+            let params = {
                 method: 'POST',
                 body: JSON.stringify(body),
                 headers: new Headers()
             };
 
 
-            fetch(url, params)
+            fetch(signupURL, params)
                 .then((resp) => resp.json())
                 .then(function (data) {
                     sessionStorage.token = data.token;
+                    sessionStorage.tokenPayload = extractJWTPayload(data.token);
                     sessionStorage.userID = data.id;
                     sessionStorage.groupID = data.group_id;
-
                     window.location.replace("/dashboard");
                 })
                 .catch(function (error) {
@@ -77,7 +76,7 @@ var student_signup = new Vue({
 });
 
 
-var instructor_signup = new Vue({
+let instructor_signup = new Vue({
     el: '#instructor_signup',
     data: {
         id: '',
@@ -106,28 +105,26 @@ var instructor_signup = new Vue({
                 return
             }
 
-
-            // Send .post request
-            body = {
+            let body = {
                 "id": this.id,
                 "name": this.name,
                 "password": this.pwd
             };
 
-            url = "/api/instructors";
-            params = {
+            let instructorSignupURL = "/api/instructors";
+            let params = {
                 method: 'POST',
                 body: JSON.stringify(body),
                 headers: new Headers()
             };
 
 
-            fetch(url, params)
+            fetch(instructorSignupURL, params)
                 .then((resp) => resp.json())
                 .then(function (data) {
                     sessionStorage.token = data.token;
+                    sessionStorage.tokenPayload = extractJWTPayload(data.token);
                     sessionStorage.userID = data.id;
-
                     window.location.replace("/dashboard");
                 })
                 .catch(function (error) {

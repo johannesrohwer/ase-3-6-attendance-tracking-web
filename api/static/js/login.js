@@ -1,4 +1,4 @@
-var login = new Vue({
+let login = new Vue({
     el: '#login',
     data: {
         id: "",
@@ -15,20 +15,20 @@ var login = new Vue({
                 return
             }
 
-            // Send post request.
-            body = {
+            let body = {
                 "id": this.id,
                 "password": this.pwd
             };
 
-            url = "/api/login";
-            params = {
+            let loginURL = "/api/login";
+            let params = {
                 method: 'POST',
-                body: JSON.stringify(body),cu
+                body: JSON.stringify(body),
                 headers: createAuthorizationHeader()
             };
 
-            fetch(url, params)
+            // Login and acquire a valid token
+            fetch(loginURL, params)
                 .then(response => {
                     return response.ok ? response : Promise.reject(response.statusText);
                 })
@@ -36,6 +36,7 @@ var login = new Vue({
                 .then(data => {
                     sessionStorage.userID = self.id;
                     sessionStorage.token = data.token;
+                    sessionStorage.tokenPayload = extractJWTPayload(data.token);
                     window.location.replace("/dashboard");
                 })
                 .catch(error => {

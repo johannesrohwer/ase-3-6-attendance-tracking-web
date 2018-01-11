@@ -72,3 +72,11 @@ function isValidGroupNumber() {
     $('#groupForm').addClass("is-invalid")
     return false
 }
+
+/* extractJWTPayload() returns a string representation of the payload of a JWT
+*  WARNING: This function does not validate the signature of the JWT. */
+let extractJWTPayload = (token) => {
+    let payload_b64 = token.split(".")[1];
+    let payload_ascii = atob(payload_b64);
+    return payload_ascii;
+};
