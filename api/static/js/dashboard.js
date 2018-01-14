@@ -1,6 +1,49 @@
 // Correct dashboard is selected below the definitions
 let app = null;
 
+// Register Vue components
+Vue.component('group-list', {
+    data: () => {
+        let data = {};
+        data.searchString = "";
+        return data
+    },
+    props: ['groups'],
+    computed: {
+        filteredGroups: function () {
+            let groupFilter = function (searchString) {
+                return (group) => {
+                    return searchString === "" || group.id.includes(searchString)
+                }
+            };
+
+            return this.groups.filter(groupFilter(this.searchString));
+        }
+    },
+    template: `<div>
+                <div class="input-group">
+                    <span class="input-group-addon">&#x1F50D;</span>
+                    <input type="text" class="form-control" placeholder="Search group..." v-model="searchString">
+                </div>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Group Number</th>
+                        <th>Time</th>
+                        <th>Place</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="group in filteredGroups">
+                        <td>{{group.id}}</td>
+                        <td>{{group.time}}</td>
+                        <td>{{group.place}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+                </div>`
+});
+
 studentDashboard = () => {
     return new Vue({
         el: "#studentDashboard",
@@ -75,20 +118,31 @@ let instructorDashboard = () => {
         el: "#instructorDashboard",
         data: {
             userID: sessionStorage.userID,
-            name: '',
-            group: sessionStorage.groupID,
-            time: '',
-            place: '',
-            attendances: [],
-            currentWeek: '',
-            baseWeek: ''
+            groups: []
         },
+        beforeMount: function() {
+
+            // Load all groups
+            // TODO: refactor this into a single method that returns a "groups" promise
+            let self = this;
+            let groupURL = "/api/groups";
+            let params = {
+                method: 'GET',
+                headers: createAuthorizationHeader()
+            };
+            fetch(groupURL, params)
+                .then(response => {
+                    return response.ok ? response : Promise.reject(response.statusText);
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    self.groups = data;
+                });
+        }
     });
 };
 
-
-// TODO: Currently, only the student dashboard is shown, we don't have an instructor dashboard yet.
-let isStudentDashboard = () => false;
 
 let selectDashboard = () => {
     let tokenPayloadObj = JSON.parse(sessionStorage.tokenPayload);
@@ -105,7 +159,7 @@ let selectDashboard = () => {
         studentDashboardSelector.show();
         return studentDashboard();
 
-    } else if(permissions.indexOf("instructor") !== -1) {
+    } else if (permissions.indexOf("instructor") !== -1) {
         instructorDashboardSelector.show();
         return instructorDashboard();
 
