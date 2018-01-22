@@ -73,6 +73,7 @@
                 <p class="lead">
                     <br>Hello {{name}}!
                     <br>Below you can see information about your group and your attendance logs.
+                    <br>
                 </p>
 
                 <table class="table table-striped">
@@ -92,27 +93,7 @@
                     </tbody>
                 </table>
 
-                <p class="lead">
-                    <br> Attendance Log
-                </p>
 
-                <table class="table table-striped">
-                    <thead>
-                    <tr>
-                        <th>Your Group Number</th>
-                        <th>Time Slot</th>
-                        <th>Room</th>
-
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>{{group}}</td>
-                        <td>{{time}}</td>
-                        <td>{{place}}</td>
-                    </tr>
-                    </tbody>
-                </table>
                 <p class="lead">
                     <br> Attendance Log
                 </p>
@@ -145,7 +126,7 @@
                 </p>
                 <div class="container">
                     <div class="row">
-                        <div class="col">This is the left part of the Dashboard.</div>
+                        <div class="col"><attendance-list :attendances="attendances"></attendance-list></div>
                         <div class="col"><group-list :groups="groups"></group-list></div>
                     </div>
                 </div>

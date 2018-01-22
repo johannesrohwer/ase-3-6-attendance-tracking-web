@@ -44,6 +44,53 @@ Vue.component('group-list', {
                 </div>`
 });
 
+// Register Vue components
+Vue.component('attendance-list', {
+    data: () => {
+        let data = {};
+        data.searchString = "";
+        return data
+    },
+    props: ['attendances'],
+    computed: {
+        filteredAttendances: function () {
+            let attendanceFilter = function (searchString) {
+                return (attendance) => {
+                    return searchString === "" || attendance.student_id.includes(searchString)
+                }
+            };
+
+            return this.attendances.filter(attendanceFilter(this.searchString));
+        }
+    },
+    template: `<div>
+                <div class="input-group">
+                    <span class="input-group-addon">&#x1F50D;</span>
+                    <input type="text" class="form-control" placeholder="Search attendances..." v-model="searchString">
+                </div>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Attendance ID</th>
+                        <th>Group ID</th>
+                        <th>Student ID</th>
+                        <th>Week ID</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="attendance in filteredAttendances">
+                        <td>{{attendance.id}}</td>
+                        <td>{{attendance.group_id}}</td>
+                        <td>{{attendance.student_id}}</td>
+                        <td>{{attendance.week_id}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+                </div>`
+});
+
+
+
 studentDashboard = () => {
     return new Vue({
         el: "#studentDashboard",
@@ -118,7 +165,8 @@ let instructorDashboard = () => {
         el: "#instructorDashboard",
         data: {
             userID: sessionStorage.userID,
-            groups: []
+            groups: [],
+            attendances: []
         },
         beforeMount: function() {
 
@@ -126,19 +174,31 @@ let instructorDashboard = () => {
             // TODO: refactor this into a single method that returns a "groups" promise
             let self = this;
             let groupURL = "/api/groups";
+            let attendanceURL = "/api/attendances";
             let params = {
                 method: 'GET',
                 headers: createAuthorizationHeader()
             };
+
+
             fetch(groupURL, params)
                 .then(response => {
                     return response.ok ? response : Promise.reject(response.statusText);
                 })
                 .then(response => response.json())
                 .then(data => {
-                    console.log(data);
                     self.groups = data;
                 });
+
+            fetch(attendanceURL, params)
+                .then(response => {
+                    return response.ok ? response : Promise.reject(response.statusText);
+                })
+                .then(response => response.json())
+                .then(data => {
+                    self.attendances = data;
+                });
+
         }
     });
 };
