@@ -63,13 +63,13 @@ function logOut() {
 }
 
 // Checks if an inputted value is a valid group number
-function isValidGroupNumber() {
+function isValidGroupNumber(group_id) {
     // TODO: So far only checking if the group number is an integer.
-    if (isInt(this.group_id)) {
-        $('#groupForm').removeClass("is-invalid")
+    if (isInt(group_id)) {
+        $('#groupForm').removeClass("is-invalid");
         return true
     }
-    $('#groupForm').addClass("is-invalid")
+    $('#groupForm').addClass("is-invalid");
     return false
 }
 
@@ -80,3 +80,7 @@ let extractJWTPayload = (token) => {
     let payload_ascii = atob(payload_b64);
     return payload_ascii;
 };
+
+function isLoggedIn() {
+    return sessionStorage.tokenPayload !== undefined
+}

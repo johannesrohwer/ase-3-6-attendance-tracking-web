@@ -46,3 +46,19 @@ let login = new Vue({
         }
     }
 });
+
+
+let hideMenu = () => {
+    if(!isLoggedIn()) {
+        let hiddenElements = [];
+        hiddenElements.push($("#menu_dashboard"));
+        hiddenElements.push($("#menu_creategroup"));
+        hiddenElements.push($("#menu_logout"));
+        hiddenElements.forEach((e) => {
+            e.hide();
+        })
+
+    }
+};
+
+hideMenu();

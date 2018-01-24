@@ -136,3 +136,14 @@ let instructor_signup = new Vue({
 });
 
 
+let hideMenu = () => {
+    let hiddenElements = [];
+    hiddenElements.push($("#menu_logout"));
+    hiddenElements.push($("#menu_dashboard"));
+    hiddenElements.push($("#menu_creategroup"));
+    hiddenElements.forEach((e) => {
+        e.hide();
+    })
+};
+
+hideMenu();

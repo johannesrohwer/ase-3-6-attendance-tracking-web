@@ -90,7 +90,6 @@ Vue.component('attendance-list', {
 });
 
 
-
 studentDashboard = () => {
     return new Vue({
         el: "#studentDashboard",
@@ -168,7 +167,7 @@ let instructorDashboard = () => {
             groups: [],
             attendances: []
         },
-        beforeMount: function() {
+        beforeMount: function () {
 
             // Load all groups
             // TODO: refactor this into a single method that returns a "groups" promise
@@ -203,6 +202,25 @@ let instructorDashboard = () => {
     });
 };
 
+let hideMenuStudent = () => {
+    let hiddenElements = [];
+    hiddenElements.push($("#menu_login"));
+    hiddenElements.push($("#menu_signup"));
+    hiddenElements.push($("#menu_creategroup"));
+    hiddenElements.forEach((e) => {
+        e.hide();
+    })
+};
+
+
+let hideMenuInstructor = () => {
+    let hiddenElements = [];
+    hiddenElements.push($("#menu_login"));
+    hiddenElements.push($("#menu_signup"));
+    hiddenElements.forEach((e) => {
+        e.hide();
+    })
+};
 
 let selectDashboard = () => {
     let tokenPayloadObj = JSON.parse(sessionStorage.tokenPayload);
@@ -216,10 +234,12 @@ let selectDashboard = () => {
     instructorDashboardSelector.hide();
 
     if (permissions.indexOf("student") !== -1) {
+        hideMenuStudent();
         studentDashboardSelector.show();
         return studentDashboard();
 
     } else if (permissions.indexOf("instructor") !== -1) {
+        hideMenuInstructor();
         instructorDashboardSelector.show();
         return instructorDashboard();
 
@@ -232,3 +252,7 @@ let selectDashboard = () => {
 
 // Load correct dashboard
 app = selectDashboard();
+
+
+
+
