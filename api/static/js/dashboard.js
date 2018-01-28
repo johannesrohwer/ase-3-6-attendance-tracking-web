@@ -71,7 +71,7 @@ Vue.component('attendance-list', {
                 <table class="table table-striped">
                     <thead>
                     <tr>
-                        <th>Group ID</th>
+                        <th>Group Number</th>
                         <th>Student ID</th>
                         <th>Week ID</th>
                     </tr>
