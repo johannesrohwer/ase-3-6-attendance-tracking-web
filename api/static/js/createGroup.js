@@ -6,7 +6,31 @@ var createGroup = new Vue({
         name: '',
         time: '',
         place: '',
-        instructor_id: ''
+        instructor_id: '',
+        instructor_name: '',
+        instructor_list: []
+    },
+    beforeMount() {
+        let self = this;
+        let url = "/api/instructors";
+        let params = {
+            method: 'GET',
+            headers: createAuthorizationHeader()
+        };
+
+        console.log(new Headers());
+        fetch(url, params)
+            .then(response => {
+                console.log(response);
+                return response.ok ? response : Promise.reject(response.statusText);
+            })
+            .then(response => response.json())
+            .then(data => {
+                self.instructor_list = data;
+            }).catch(err => {
+                console.log(err)
+        })
+
     },
     methods: {
         // Submits the form to the REST API. Previously performs minor input validation.
@@ -25,12 +49,18 @@ var createGroup = new Vue({
                 return
             }
 
+            // Lookup correct instructor ID
+            let self = this;
+            let ins_id = this.instructor_list.filter(e => {
+                return e.name === self.instructor_name
+            })[0].id;
+
             // Fix body and params for POST request, then send it.
             body = {
                 "id": this.group_id,
                 "time": this.time,
                 "place": this.place,
-                "instructor_id": this.instructor_id
+                "instructor_id": ins_id
             };
 
             url = "/api/groups";
@@ -40,11 +70,12 @@ var createGroup = new Vue({
                 headers: new Headers()
             };
 
-            // TODO: Instead of showing alerts, e.g. redirect the user to a certain page, like the dashboard.
             fetch(url, params)
-                .then((resp) => resp.json())
-                .then(function (data) {
-                    alert("Your group has been set up.");
+                .then(response => {
+                    return response.ok ? response : Promise.reject(response.statusText);
+                })
+                .then(response => response.json())
+                .then(function () {
                     window.location.replace("/dashboard");
                 })
                 .catch(function (error) {
