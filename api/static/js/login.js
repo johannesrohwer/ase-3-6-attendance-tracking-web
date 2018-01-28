@@ -41,7 +41,8 @@ let login = new Vue({
                 })
                 .catch(error => {
                     console.log(error);
-                    self.alertMessage = error
+                    // Show a more meaningful error to the end user.
+                    self.alertMessage = "The entered password was incorrect."
                 })
         }
     }
