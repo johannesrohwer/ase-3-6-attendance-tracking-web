@@ -84,3 +84,25 @@ let extractJWTPayload = (token) => {
 function isLoggedIn() {
     return sessionStorage.tokenPayload !== undefined
 }
+
+function compareByWeek(a,b) {
+    let aWeekID = parseInt(a.week_id);
+    let bWeekID = parseInt(b.week_id);
+
+    if (aWeekID < bWeekID)
+        return -1;
+    if (aWeekID > bWeekID)
+        return 1;
+    return 0;
+}
+
+function compareGroups(a,b) {
+    let aGroupID = parseInt(a.id);
+    let bGroupID = parseInt(b.id);
+
+    if (aGroupID < bGroupID)
+        return -1;
+    if (aGroupID > bGroupID)
+        return 1;
+    return 0;
+}

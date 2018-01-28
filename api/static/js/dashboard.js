@@ -71,15 +71,13 @@ Vue.component('attendance-list', {
                 <table class="table table-striped">
                     <thead>
                     <tr>
-                        <th>Attendance ID</th>
-                        <th>Group ID</th>
+                        <th>Group Number</th>
                         <th>Student ID</th>
                         <th>Week ID</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr v-for="attendance in filteredAttendances">
-                        <td>{{attendance.id}}</td>
                         <td>{{attendance.group_id}}</td>
                         <td>{{attendance.student_id}}</td>
                         <td>{{attendance.week_id}}</td>
@@ -165,15 +163,15 @@ let instructorDashboard = () => {
         data: {
             userID: sessionStorage.userID,
             groups: [],
-            attendances: []
+            attendances: [],
+            name: ''
         },
         beforeMount: function () {
 
-            // Load all groups
-            // TODO: refactor this into a single method that returns a "groups" promise
             let self = this;
             let groupURL = "/api/groups";
             let attendanceURL = "/api/attendances";
+            let instructorURL = "/api/instructors/" + self.userID;
             let params = {
                 method: 'GET',
                 headers: createAuthorizationHeader()
@@ -186,6 +184,7 @@ let instructorDashboard = () => {
                 })
                 .then(response => response.json())
                 .then(data => {
+                    data.sort(compareGroups);
                     self.groups = data;
                 });
 
@@ -195,8 +194,21 @@ let instructorDashboard = () => {
                 })
                 .then(response => response.json())
                 .then(data => {
-                    self.attendances = data;
+                    if(data) {
+                        data.sort(compareByWeek);
+                        self.attendances = data;
+                    }
                 });
+
+            fetch(instructorURL, params)
+                .then(response => {
+                    return response.ok ? response : Promise.reject(response.statusText);
+                })
+                .then(response => response.json())
+                .then(data => {
+                    self.name = data.name;
+                })
+                .catch(err => {console.log(err)})
 
         }
     });
