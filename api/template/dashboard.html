@@ -70,52 +70,65 @@
         <div class="col-lg-12 text-center" id="greeting">
             <h1 class="mt-5">Dashboard</h1>
             <div id="studentDashboard">
+
+                <br>
+                <h3>Hello {{name}}!</h3>
                 <p class="lead">
-                    <br>Hello {{name}}!
-                    <br>Below you can see information about your group and your attendance logs.
-                    <br>
+                    Below you can see information about your group and your attendance logs.
                 </p>
 
-                <table class="table table-striped">
-                    <thead>
-                    <tr>
-                        <th>Group Number</th>
-                        <th>Time Slot</th>
-                        <th>Room</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>{{group}}</td>
-                        <td>{{time}}</td>
-                        <td>{{place}}</td>
-                    </tr>
-                    </tbody>
-                </table>
 
+                <div class="row">
 
-                <p class="lead">
-                    <br> Attendance Log
-                </p>
+                    <div class="col">
 
-                <table class="table table-striped">
-                    <thead>
-                    <tr>
-                        <th>Week Number</th>
-                        <th>Attended?</th>
-                        <th>Presented?</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr v-for="attendance in attendances">
-                        <td>{{attendance.week_id}}</td>
-                        <td v-if="attendance.id == '-1'">&#x2717;</td>
-                        <td v-else>&#x2714;</td>
-                        <td v-if="attendance.presented">&#x2714;</td>
-                        <td v-else>&#x2717;</td>
-                    </tr>
-                    </tbody>
-                </table>
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Group Number</th>
+                                <th>Time Slot</th>
+                                <th>Room</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>{{group}}</td>
+                                <td>{{time}}</td>
+                                <td>{{place}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                        <br>
+                        <div class="alert alert-light" role="alert">
+                            Please note that your attendance can only be tracked for your personal group.
+                            You can track your attendance and whether you presented in a specific tutorial group using the Android application.
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Week Number</th>
+                                <th>Attended?</th>
+                                <th>Presented?</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr v-for="attendance in attendances">
+                                <td>{{attendance.week_id}}</td>
+                                <td v-if="attendance.id == '-1'">&#x2717;</td>
+                                <td v-else>&#x2714;</td>
+                                <td v-if="attendance.presented">&#x2714;</td>
+                                <td v-else>&#x2717;</td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
 
 
             </div>
@@ -126,8 +139,12 @@
                 </p>
                 <div class="container">
                     <div class="row">
-                        <div class="col"><attendance-list :attendances="attendances"></attendance-list></div>
-                        <div class="col"><group-list :groups="groups"></group-list></div>
+                        <div class="col">
+                            <attendance-list :attendances="attendances"></attendance-list>
+                        </div>
+                        <div class="col">
+                            <group-list :groups="groups"></group-list>
+                        </div>
                     </div>
                 </div>
 
