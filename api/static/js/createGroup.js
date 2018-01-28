@@ -16,7 +16,7 @@ var createGroup = new Vue({
             // Perform (light) input validation.
             let err = false;
 
-            if (!isValidGroupNumber()) {
+            if (!isValidGroupNumber(this.group_id)) {
                 err = true
             }
 
@@ -44,8 +44,8 @@ var createGroup = new Vue({
             fetch(url, params)
                 .then((resp) => resp.json())
                 .then(function (data) {
-                    alert("Your group has been set up.")
-
+                    alert("Your group has been set up.");
+                    window.location.replace("/dashboard");
                 })
                 .catch(function (error) {
                     console.log(error);
@@ -54,3 +54,15 @@ var createGroup = new Vue({
         }
     }
 });
+
+
+let hideMenu = () => {
+    let hiddenElements = [];
+    hiddenElements.push($("#menu_login"));
+    hiddenElements.push($("#menu_signup"));
+    hiddenElements.forEach((e) => {
+        e.hide();
+    })
+};
+
+hideMenu();

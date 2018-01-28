@@ -5,7 +5,7 @@ import "github.com/google/uuid"
 type Attendance struct {
 	ID        string `json:"id"`
 	WeekID    string `json:"week_id"`
-	Presented bool   `json:"presented,omitempty"`
+	Presented bool   `json:"presented"`
 	StudentID string `json:"student_id,omitempty"`
 	GroupID   string `json:"group_id,omitempty"`
 }
