@@ -40,11 +40,13 @@ var createGroup = new Vue({
                 headers: new Headers()
             };
 
-            // TODO: Instead of showing alerts, e.g. redirect the user to a certain page, like the dashboard.
             fetch(url, params)
+                .then(response => {
+                    return response.ok ? response : Promise.reject(response.statusText);
+                })
+                .then(response => response.json())
                 .then((resp) => resp.json())
-                .then(function (data) {
-                    alert("Your group has been set up.");
+                .then(function () {
                     window.location.replace("/dashboard");
                 })
                 .catch(function (error) {
