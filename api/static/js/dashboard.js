@@ -71,7 +71,6 @@ Vue.component('attendance-list', {
                 <table class="table table-striped">
                     <thead>
                     <tr>
-                        <th>Attendance ID</th>
                         <th>Group ID</th>
                         <th>Student ID</th>
                         <th>Week ID</th>
@@ -79,7 +78,6 @@ Vue.component('attendance-list', {
                     </thead>
                     <tbody>
                     <tr v-for="attendance in filteredAttendances">
-                        <td>{{attendance.id}}</td>
                         <td>{{attendance.group_id}}</td>
                         <td>{{attendance.student_id}}</td>
                         <td>{{attendance.week_id}}</td>
@@ -186,6 +184,7 @@ let instructorDashboard = () => {
                 })
                 .then(response => response.json())
                 .then(data => {
+                    data.sort(compareGroups);
                     self.groups = data;
                 });
 
@@ -195,7 +194,10 @@ let instructorDashboard = () => {
                 })
                 .then(response => response.json())
                 .then(data => {
-                    self.attendances = data;
+                    if(data) {
+                        data.sort(compareByWeek);
+                        self.attendances = data;
+                    }
                 });
 
             fetch(instructorURL, params)

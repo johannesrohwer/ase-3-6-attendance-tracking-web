@@ -14,6 +14,7 @@ let student_signup = new Vue({
         fetch(url)
             .then((resp) => resp.json())
             .then(function (data) {
+                data.sort(compareGroups);
                 self.group_options = data
 
             })
